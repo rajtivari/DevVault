@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AlertCircle, Check, Code2, Copy, Download, FileText, FolderOpen, Home, PanelLeftClose, PanelLeftOpen, Pencil, Play, Plus, Search, Save, Tag, Trash2, Upload, X } from 'lucide-react'
+import { AlertCircle, Check, Code2, Copy, Download, FileText, FolderOpen, Home, PanelLeftClose, PanelLeftOpen, Pencil, Star, Play, Plus, Search, Save, Tag, Trash2, Upload, X } from 'lucide-react'
 import { createPreviewDocument, getRunnerMode, runJavaScriptInSandbox, type ConsoleEntry, type SandboxRun } from './codeRunner'
 import './App.css'
 
@@ -10,6 +10,7 @@ type Note = {
   tags: string[]
   collectionId?: string
   updatedAt: string
+  favorite?: boolean
 }
 
 type Snippet = {
@@ -20,6 +21,7 @@ type Snippet = {
   tags: string[]
   collectionId?: string
   updatedAt: string
+  favorite?: boolean
 }
 
 type Collection = {
@@ -106,7 +108,7 @@ function App() {
   const [notes, setNotes] = useState<Note[]>(readNotes)
   const [snippets, setSnippets] = useState<Snippet[]>(readSnippets)
   const [collections, setCollections] = useState<Collection[]>(readCollections)
-  const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections'>('dashboard')
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections' | 'favorites'>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const globalSearchInputRef = useRef<HTMLInputElement | null>(null)
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null)
@@ -321,6 +323,16 @@ function App() {
     setActiveTag(null)
     setSearch('')
     setFeedback('New note created.')
+  }
+
+  function toggleNoteFavorite(noteId: string) {
+    commitNotes(notes.map((note) => note.id === noteId ? { ...note, favorite: !note.favorite } : note))
+    setFeedback(notes.find((note) => note.id === noteId)?.favorite ? 'Removed from favorites.' : 'Added to favorites.')
+  }
+
+  function toggleSnippetFavorite(snippetId: string) {
+    commitSnippets(snippets.map((snippet) => snippet.id === snippetId ? { ...snippet, favorite: !snippet.favorite } : snippet))
+    setFeedback(snippets.find((snippet) => snippet.id === snippetId)?.favorite ? 'Removed from favorites.' : 'Added to favorites.')
   }
 
   function updateNote(noteId: string, changes: Partial<Pick<Note, 'title' | 'content' | 'tags' | 'collectionId'>>) {
@@ -668,7 +680,7 @@ function App() {
             <button className="icon-button sidebar-toggle" type="button" onClick={() => setSidebarCollapsed((collapsed) => !collapsed)} aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"} title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}>
               {sidebarCollapsed ? <PanelLeftOpen size={16} aria-hidden="true" /> : <PanelLeftClose size={16} aria-hidden="true" />}
             </button>
-            <div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{activeSection === 'dashboard' ? 'Dashboard' : activeSection === 'notes' ? 'Notes' : activeSection === 'snippets' ? 'Code snippets' : 'Collections'}</strong></div>
+            <div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{activeSection === 'dashboard' ? 'Dashboard' : activeSection === 'notes' ? 'Notes' : activeSection === 'snippets' ? 'Code snippets' : activeSection === 'favorites' ? 'Favorites' : 'Collections'}</strong></div>
           </div>
           <div className="global-search-wrap">
             <label className="global-search-box">
@@ -844,6 +856,11 @@ function App() {
             </div>
             <p className="dashboard-local-note"><span className="status-dot" aria-hidden="true" />Local storage is device-specific. Backups let you move your data safely.</p>
           </section>
+        ) : activeSection === 'favorites' ? (
+          <section className="favorites-workspace" aria-label="Favorite items"><div className="favorites-heading"><div><h2>Quick access</h2><p>Star notes and snippets to keep them close at hand.</p></div><span>{notes.filter((note) => note.favorite).length + snippets.filter((snippet) => snippet.favorite).length} saved</span></div><div className="favorites-grid">
+          {notes.filter((note) => note.favorite).map((note) => <article className="favorite-card" key={note.id}><div className="favorite-card-type"><FileText size={14} /> NOTE <button className="icon-button favorite-toggle is-favorite" type="button" onClick={() => toggleNoteFavorite(note.id)} aria-label="Remove note from favorites"><Star size={15} fill="currentColor" /></button></div><button className="favorite-card-open" type="button" onClick={() => { setActiveSection('notes'); setActiveNoteId(note.id); setActiveTag(null) }}><strong>{note.title.trim() || 'Untitled note'}</strong><p>{note.content.trim() || 'No content yet'}</p></button></article>)}
+          {snippets.filter((snippet) => snippet.favorite).map((snippet) => <article className="favorite-card" key={snippet.id}><div className="favorite-card-type"><Code2 size={14} /> {snippet.language.toUpperCase()} <button className="icon-button favorite-toggle is-favorite" type="button" onClick={() => toggleSnippetFavorite(snippet.id)} aria-label="Remove snippet from favorites"><Star size={15} fill="currentColor" /></button></div><button className="favorite-card-open" type="button" onClick={() => { setActiveSection('snippets'); setActiveSnippetId(snippet.id); setSnippetDraft({ title: snippet.title, language: snippet.language, code: snippet.code, tagsText: snippet.tags.join(', '), collectionId: snippet.collectionId }); setSnippetDirty(false) }}><strong>{snippet.title}</strong><p>{snippet.code.trim() || 'No code yet'}</p></button></article>)}
+          </div>{notes.every((note) => !note.favorite) && snippets.every((snippet) => !snippet.favorite) && <div className="dashboard-empty favorites-empty"><Star size={20} /><h3>No favorites yet</h3><p>Open a note or snippet and tap its star to keep it here.</p></div>}</section>
         ) : activeSection === 'notes' ? (
         <section className="workspace" aria-label="Notes workspace">
           <div className="notes-panel">
@@ -897,6 +914,7 @@ function App() {
               <>
                 <div className="editor-toolbar">
                   <span className="editor-state"><span className="status-dot" aria-hidden="true" />{storageError ? 'Not saved' : 'Saved on this device'}</span>
+                  <button className={`icon-button favorite-toggle${activeNote.favorite ? " is-favorite" : ""}`} type="button" onClick={() => toggleNoteFavorite(activeNote.id)} aria-label={activeNote.favorite ? "Remove note from favorites" : "Add note to favorites"} title="Toggle favorite"><Star size={16} fill={activeNote.favorite ? "currentColor" : "none"} aria-hidden="true" /></button>
                   <button className="icon-button delete-button" type="button" onClick={deleteNote} aria-label="Delete note" title="Delete note">
                     <Trash2 size={16} aria-hidden="true" />
                   </button>
@@ -1037,6 +1055,7 @@ function App() {
                         <Copy size={14} aria-hidden="true" />Copy code
                       </button>
                       {activeSnippetId && (
+                        <button className={`icon-button favorite-toggle${activeSnippet.favorite ? " is-favorite" : ""}`} type="button" onClick={() => toggleSnippetFavorite(activeSnippet.id)} aria-label={activeSnippet.favorite ? "Remove snippet from favorites" : "Add snippet to favorites"} title="Toggle favorite"><Star size={16} fill={activeSnippet.favorite ? "currentColor" : "none"} aria-hidden="true" /></button>
                         <button className="icon-button delete-button" type="button" onClick={deleteSnippet} aria-label="Delete snippet" title="Delete snippet">
                           <Trash2 size={16} aria-hidden="true" />
                         </button>
