@@ -131,7 +131,7 @@ function App() {
   const [regexInput, setRegexInput] = useState('')
   const [regexMatches, setRegexMatches] = useState<string[]>([])
   const [regexError, setRegexError] = useState('')
-  const [toolName, setToolName] = useState<'json' | 'base64' | 'url'>('json')
+  const [toolName, setToolName] = useState<'json' | 'base64' | 'url' | 'regex'>('json')
   const [toolInput, setToolInput] = useState('')
   const [toolOutput, setToolOutput] = useState('')
   const [toolError, setToolError] = useState('')
