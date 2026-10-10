@@ -1239,13 +1239,11 @@ function App() {
                         ))}
                       </div>
                       <div className="code-editor-stage">
-                        <pre className="code-highlight-layer" aria-hidden="true" ref={codeHighlightRef}>{highlightCode(snippetDraft.code).map((part, index) => <span className={`syntax-${part.kind}`} key={index}>{part.text}</span>)}{snippetDraft.code.endsWith('\n') ? ' ' : ''}</pre>
                       <textarea
                         className="content-input snippet-code-input"
                         id="snippet-code"
                         value={snippetDraft.code}
                         onChange={(event) => updateSnippetDraft('code', event.target.value)}
-                        onScroll={(event) => { if (codeHighlightRef.current) { codeHighlightRef.current.scrollTop = event.currentTarget.scrollTop; codeHighlightRef.current.scrollLeft = event.currentTarget.scrollLeft } }}
                         onKeyDown={(event) => {
                           if (event.key === 'Tab') {
                             event.preventDefault()
