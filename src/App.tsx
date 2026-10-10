@@ -615,8 +615,6 @@ function App() {
             <span>Collections</span>
             <span className="nav-count">{collections.length}</span>
           </button>
-        </div>
-
           <button className={`nav-item${activeSection === 'tools' ? ' is-active' : ''}`} type="button" onClick={() => setActiveSection('tools')}><Wrench size={16} aria-hidden="true" /><span>Developer tools</span></button>
         </div>
 
