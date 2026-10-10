@@ -1211,16 +1211,40 @@ function App() {
                     </select>
 
                     <label className="field-label snippet-field-label" htmlFor="snippet-code">Code</label>
-                    <textarea
-                      className="content-input snippet-code-input"
-                      id="snippet-code"
-                      value={snippetDraft.code}
-                      onChange={(event) => updateSnippetDraft('code', event.target.value)}
-                      placeholder={'// Paste or write your snippet here'}
-                      spellCheck={false}
-                      aria-invalid={Boolean(snippetErrors.code)}
-                      aria-describedby={snippetErrors.code ? 'snippet-code-error' : undefined}
-                    />
+                    <div className="code-editor-shell">
+                      <div className="code-line-gutter" aria-hidden="true">
+                        {Array.from({ length: Math.max(1, snippetDraft.code.split('\n').length) }, (_, index) => (
+                          <span key={index}>{index + 1}</span>
+                        ))}
+                      </div>
+                      <textarea
+                        className="content-input snippet-code-input"
+                        id="snippet-code"
+                        value={snippetDraft.code}
+                        onChange={(event) => updateSnippetDraft('code', event.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Tab') {
+                            event.preventDefault()
+                            const target = event.currentTarget
+                            const start = target.selectionStart
+                            const end = target.selectionEnd
+                            const nextCode = snippetDraft.code.slice(0, start) + '  ' + snippetDraft.code.slice(end)
+                            updateSnippetDraft('code', nextCode)
+                            requestAnimationFrame(() => {
+                              target.selectionStart = target.selectionEnd = start + 2
+                            })
+                          }
+                          if ((event.ctrlKey || event.metaKey) && event.key === 'Enter' && ['javascript', 'python'].includes(snippetRunnerMode)) {
+                            event.preventDefault()
+                            runSnippetCode()
+                          }
+                        }}
+                        placeholder={'Write your code here…'}
+                        spellCheck={false}
+                        aria-invalid={Boolean(snippetErrors.code)}
+                        aria-describedby={snippetErrors.code ? 'snippet-code-error' : undefined}
+                      />
+                    </div>
                     {snippetErrors.code && <span className="snippet-error" id="snippet-code-error" role="alert">{snippetErrors.code}</span>}
                     <section className="snippet-output" aria-labelledby="snippet-output-title">
                       <div className="snippet-output-header">
