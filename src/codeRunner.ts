@@ -1,4 +1,4 @@
-export type RunnerMode = 'javascript' | 'html-preview' | 'css-preview' | 'unsupported'
+export type RunnerMode = 'javascript' | 'python' | 'html-preview' | 'css-preview' | 'unsupported'
 export type ConsoleEntryKind = 'log' | 'error'
 
 export type ConsoleEntry = {
@@ -24,6 +24,8 @@ const maxEntryLength = 4000
 
 const languageModes: Record<string, RunnerMode> = {
   javascript: 'javascript',
+  python: 'python',
+  py: 'python',
   js: 'javascript',
   ecmascript: 'javascript',
   html: 'html-preview',
@@ -221,4 +223,61 @@ export function runJavaScriptInSandbox(
   }, executionTimeoutMs + 300)
 
   return { cancel: () => dispose(false) }
+}
+
+let pyodideLoadPromise: Promise<{ runPythonAsync: (code: string) => Promise<unknown>; globals: { get: (name: string) => unknown; set: (name: string, value: unknown) => void; delete: (name: string) => void } }> | null = null
+
+async function loadPyodideRuntime() {
+  if (!pyodideLoadPromise) {
+    pyodideLoadPromise = new Promise((resolve, reject) => {
+      const existing = document.querySelector<HTMLScriptElement>('script[data-devvault-pyodide]')
+      const script = existing ?? document.createElement('script')
+      const ready = () => {
+        const runtime = (window as Window & { loadPyodide?: (options: { indexURL: string }) => Promise<{ runPythonAsync: (code: string) => Promise<unknown>; globals: { get: (name: string) => unknown; set: (name: string, value: unknown) => void; delete: (name: string) => void } }> }).loadPyodide
+        if (!runtime) { reject(new Error('Python runtime did not load. Check your internet connection and try again.')); return }
+        runtime({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.7/full/' }).then(resolve, reject)
+      }
+      script.addEventListener('load', ready, { once: true })
+      script.addEventListener('error', () => reject(new Error('Could not download the Python runtime. Check your internet connection.')), { once: true })
+      if (!existing) {
+        script.src = 'https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js'
+        script.async = true
+        script.dataset.devvaultPyodide = 'true'
+        document.head.appendChild(script)
+      } else if ((window as Window & { loadPyodide?: unknown }).loadPyodide) ready()
+    })
+  }
+  return pyodideLoadPromise
+}
+
+export async function runPythonInBrowser(
+  code: string,
+  onEntry: (entry: ConsoleEntry) => void,
+): Promise<void> {
+  const runId = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`
+  try {
+    onEntry({ id: `${runId}-loading`, kind: 'log', text: 'Starting Python runtime… first run may take a little longer.' })
+    const pyodide = await loadPyodideRuntime()
+    pyodide.globals.set('__devvault_source', code)
+    await pyodide.runPythonAsync(`
+import sys, io, traceback, contextlib
+__devvault_out = io.StringIO()
+__devvault_err = io.StringIO()
+try:
+    with contextlib.redirect_stdout(__devvault_out), contextlib.redirect_stderr(__devvault_err):
+        exec(compile(__devvault_source, '<DevVault>', 'exec'), {'__name__': '__main__'})
+except Exception:
+    __devvault_err.write(traceback.format_exc())
+`)
+    const stdout = pyodide.globals.get('__devvault_out')
+    const stderr = pyodide.globals.get('__devvault_err')
+    const outText = stdout && typeof (stdout as { getvalue?: () => string }).getvalue === 'function' ? (stdout as { getvalue: () => string }).getvalue() : ''
+    const errText = stderr && typeof (stderr as { getvalue?: () => string }).getvalue === 'function' ? (stderr as { getvalue: () => string }).getvalue() : ''
+    if (outText.trim()) onEntry({ id: `${runId}-output`, kind: 'log', text: outText.trimEnd() })
+    if (errText.trim()) onEntry({ id: `${runId}-error`, kind: 'error', text: errText.trimEnd() })
+    if (!outText.trim() && !errText.trim()) onEntry({ id: `${runId}-empty`, kind: 'log', text: 'Program finished with no printed output.' })
+    pyodide.globals.delete('__devvault_source')
+  } catch (error) {
+    onEntry({ id: `${runId}-fatal`, kind: 'error', text: error instanceof Error ? error.message : 'Python could not run.' })
+  }
 }
