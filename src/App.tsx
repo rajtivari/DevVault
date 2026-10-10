@@ -120,6 +120,8 @@ function App() {
   const [isRunning, setIsRunning] = useState(false)
   const [runFinished, setRunFinished] = useState(false)
   const [search, setSearch] = useState('')
+  const [globalSearch, setGlobalSearch] = useState('')
+  const [globalSearchOpen, setGlobalSearchOpen] = useState(false)
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [activeSnippetTag, setActiveSnippetTag] = useState<string | null>(null)
   const [languageFilter, setLanguageFilter] = useState('')
@@ -647,6 +649,54 @@ function App() {
       <main className="main-content" id="notes">
         <header className="topbar">
           <div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{activeSection === 'dashboard' ? 'Dashboard' : activeSection === 'notes' ? 'Notes' : activeSection === 'snippets' ? 'Code snippets' : 'Collections'}</strong></div>
+          <div className="global-search-wrap">
+            <label className="global-search-box">
+              <Search size={15} aria-hidden="true" />
+              <input
+                type="search"
+                value={globalSearch}
+                onFocus={() => setGlobalSearchOpen(true)}
+                onChange={(event) => { setGlobalSearch(event.target.value); setGlobalSearchOpen(true) }}
+                onKeyDown={(event) => { if (event.key === 'Escape') { setGlobalSearchOpen(false); setGlobalSearch('') } }}
+                placeholder="Search everything..."
+                aria-label="Search all notes, snippets, and collections"
+                aria-expanded={globalSearchOpen}
+                aria-controls="global-search-results"
+              />
+              <kbd>Esc</kbd>
+            </label>
+            {globalSearchOpen && (
+              <div className="global-search-results" id="global-search-results">
+                {!globalSearch.trim() ? (
+                  <p className="global-search-hint">Search across notes, code, tags, and collections.</p>
+                ) : (
+                  <>
+                    {notes.filter((note) => `${note.title} ${note.content} ${note.tags.join(' ')}`.toLowerCase().includes(globalSearch.trim().toLowerCase())).slice(0, 5).map((note) => (
+                      <button className="global-search-result" type="button" key={`note-${note.id}`} onClick={() => { setActiveSection('notes'); setActiveNoteId(note.id); setActiveTag(null); setSearch(''); setGlobalSearchOpen(false); setGlobalSearch('') }}>
+                        <FileText size={15} aria-hidden="true" /><span><strong>{note.title.trim() || 'Untitled note'}</strong><small>Note · {note.tags.join(', ') || 'No tags'}</small></span>
+                      </button>
+                    ))}
+                    {snippets.filter((snippet) => `${snippet.title} ${snippet.code} ${snippet.language} ${snippet.tags.join(' ')}`.toLowerCase().includes(globalSearch.trim().toLowerCase())).slice(0, 5).map((snippet) => (
+                      <button className="global-search-result" type="button" key={`snippet-${snippet.id}`} onClick={() => { if (canDiscardSnippetDraft()) { clearOutput(); setActiveSection('snippets'); setActiveSnippetId(snippet.id); setSnippetDraft({ title: snippet.title, language: snippet.language, code: snippet.code, tagsText: snippet.tags.join(', '), collectionId: snippet.collectionId }); setSnippetErrors({}); setSnippetDirty(false); setGlobalSearchOpen(false); setGlobalSearch('') } }}>
+                        <Code2 size={15} aria-hidden="true" /><span><strong>{snippet.title}</strong><small>Snippet · {snippet.language}</small></span>
+                      </button>
+                    ))}
+                    {collections.filter((collection) => `${collection.name} ${collection.description}`.toLowerCase().includes(globalSearch.trim().toLowerCase())).slice(0, 3).map((collection) => (
+                      <button className="global-search-result" type="button" key={`collection-${collection.id}`} onClick={() => { setActiveSection('collections'); setSelectedCollectionId(collection.id); setCollectionDraft(null); setGlobalSearchOpen(false); setGlobalSearch('') }}>
+                        <FolderOpen size={15} aria-hidden="true" /><span><strong>{collection.name}</strong><small>Collection · {collection.description || 'No description'}</small></span>
+                      </button>
+                    ))}
+                    {!notes.some((note) => `${note.title} ${note.content} ${note.tags.join(' ')}`.toLowerCase().includes(globalSearch.trim().toLowerCase())) &&
+                     !snippets.some((snippet) => `${snippet.title} ${snippet.code} ${snippet.language} ${snippet.tags.join(' ')}`.toLowerCase().includes(globalSearch.trim().toLowerCase())) &&
+                     !collections.some((collection) => `${collection.name} ${collection.description}`.toLowerCase().includes(globalSearch.trim().toLowerCase())) && (
+                      <p className="global-search-hint">No results found for “{globalSearch.trim()}”.</p>
+                    )}
+                  </>
+                )}
+                <button className="global-search-close" type="button" onClick={() => { setGlobalSearchOpen(false); setGlobalSearch('') }}>Close search</button>
+              </div>
+            )}
+          </div>
         </header>
 
         <section className="page-heading" aria-labelledby="page-title">
