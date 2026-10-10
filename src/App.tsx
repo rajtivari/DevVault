@@ -802,7 +802,25 @@ function App() {
                 {sortedSnippets.length ? <div className="dashboard-recent-list">{sortedSnippets.slice(0, 4).map((snippet) => <button className="dashboard-recent-item" type="button" key={snippet.id} onClick={() => { setActiveSnippetId(snippet.id); setSnippetDraft({ title: snippet.title, language: snippet.language, code: snippet.code, tagsText: snippet.tags.join(', '), collectionId: snippet.collectionId }); setSnippetDirty(false); setActiveSection('snippets') }}><Code2 size={15} aria-hidden="true" /><span><strong>{snippet.title}</strong><small>{snippet.language} · {snippet.code.trim().split('\n')[0].slice(0, 80)}</small></span><time>{new Date(snippet.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</time></button>)}</div> : <div className="dashboard-empty"><Code2 size={18} aria-hidden="true" /><p>No snippets yet. Save a useful pattern or command.</p></div>}
               </section>
             </div>
-            <p className="dashboard-local-note"><span className="status-dot" aria-hidden="true" />Everything stays in this browser. Backup tools will be added in the data-management stage.</p>
+            <div className="dashboard-lower-grid">
+              <section className="dashboard-section dashboard-start-section">
+                <div className="dashboard-section-heading"><div><h3>Build your library</h3><p>A simple workflow for useful knowledge</p></div></div>
+                <div className="dashboard-start-list">
+                  <button type="button" className="dashboard-start-item" onClick={createNote}><span className="dashboard-start-number">01</span><span><strong>Capture an idea</strong><small>Save a lesson, command, or solution as a note.</small></span><Plus size={16} aria-hidden="true" /></button>
+                  <button type="button" className="dashboard-start-item" onClick={createSnippet}><span className="dashboard-start-number">02</span><span><strong>Keep reusable code</strong><small>Store a pattern once so you can find it later.</small></span><Plus size={16} aria-hidden="true" /></button>
+                  <button type="button" className="dashboard-start-item" onClick={() => setActiveSection('collections')}><span className="dashboard-start-number">03</span><span><strong>Organize by project</strong><small>Group related notes and snippets into collections.</small></span><FolderOpen size={16} aria-hidden="true" /></button>
+                </div>
+              </section>
+              <section className="dashboard-section dashboard-backup-section">
+                <div className="dashboard-section-heading"><div><h3>Your data, your control</h3><p>Local-first by design</p></div><span className="dashboard-privacy-icon"><Check size={15} aria-hidden="true" /></span></div>
+                <p className="dashboard-backup-copy">Your notes, snippets, and collections are stored in this browser. Export a backup regularly to move your workspace to another device or keep a safe copy.</p>
+                <div className="dashboard-backup-actions">
+                  <button className="secondary-button" type="button" onClick={exportBackup}><Download size={14} aria-hidden="true" />Download backup</button>
+                  <button className="text-button" type="button" onClick={() => backupInputRef.current?.click()}><Upload size={14} aria-hidden="true" />Restore backup</button>
+                </div>
+              </section>
+            </div>
+            <p className="dashboard-local-note"><span className="status-dot" aria-hidden="true" />Local storage is device-specific. Backups let you move your data safely.</p>
           </section>
         ) : activeSection === 'notes' ? (
         <section className="workspace" aria-label="Notes workspace">
