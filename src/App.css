@@ -1223,3 +1223,16 @@
 .global-search-close:hover{color:#e5e5eb}
 @media(max-width:760px){.global-search-wrap{width:min(250px,55%)}.global-search-box{height:34px}.global-search-box kbd{display:none}}
 @media(max-width:480px){.topbar{align-items:center;gap:8px}.global-search-wrap{width:48%}.global-search-box{gap:5px;padding-inline:7px}.global-search-box input{font-size:11px}}
+
+.app-shell { transition: grid-template-columns 180ms ease; }
+.app-shell.sidebar-collapsed { grid-template-columns: 76px minmax(0, 1fr); }
+.sidebar-collapsed .sidebar { padding-inline: 11px; }
+.sidebar-collapsed .brand { gap: 0; margin-inline: auto; }
+.sidebar-collapsed .brand > span, .sidebar-collapsed .sidebar-label, .sidebar-collapsed .nav-item > span, .sidebar-collapsed .sidebar-hint, .sidebar-collapsed .sidebar-footer > span:last-child, .sidebar-collapsed .sidebar-label-row > svg { display: none; }
+.sidebar-collapsed .sidebar-section { margin-bottom: 22px; }
+.sidebar-collapsed .nav-item { justify-content: center; padding-inline: 0; }
+.topbar-leading { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.sidebar-toggle { width: 32px; height: 32px; border-color: #303038; background: #151519; }
+.sidebar-toggle:hover { border-color: #55446f; background: #211d29; }
+@media (max-width: 760px) { .app-shell.sidebar-collapsed { display: block; } .sidebar-collapsed .sidebar { padding: 13px 18px 11px; } .sidebar-collapsed .brand { gap: 12px; margin: 0 0 13px; } .sidebar-collapsed .brand > span { display: inline; } .sidebar-collapsed .sidebar > .sidebar-section:first-of-type .nav-item { justify-content: flex-start; padding-inline: 9px; } .sidebar-collapsed .sidebar-section:first-of-type .nav-item > span { display: inline; } .sidebar-collapsed .sidebar-section:first-of-type .nav-item .nav-count { display: none; } .sidebar-collapsed .sidebar-label, .sidebar-collapsed .sidebar-hint, .sidebar-collapsed .sidebar-footer { display: none; } .topbar-leading { gap: 7px; } .topbar { gap: 8px; } }
+@media (prefers-reduced-motion: reduce) { .app-shell { transition: none; } }
