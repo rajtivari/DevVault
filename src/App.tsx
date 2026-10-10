@@ -175,10 +175,10 @@ function App() {
     const centers = groups.map((id, index) => ({ id, x: groups.length === 1 ? 50 : 30 + (index % 2) * 40, y: 50 }))
     return entries.map((entry) => {
       if (entry.kind === 'collection') {
-        const center = centers.find((item) => item.id === entry.id)
         return { ...entry, x: 50, y: 18 + Math.max(0, collections.findIndex((item) => item.id === entry.id)) * 64 }
       }
       const group = entry.collectionId || 'ungrouped'
+      const center = centers.find((item) => item.id === group) || { x: 50, y: 50 }
       const siblings = entries.filter((item) => item.kind !== 'collection' && (item.collectionId || 'ungrouped') === group)
       const index = siblings.findIndex((item) => item.id === entry.id)
       const angle = (index / Math.max(siblings.length, 1)) * Math.PI * 2 - Math.PI / 2
