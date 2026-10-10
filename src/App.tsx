@@ -102,6 +102,26 @@ function readCollections(): Collection[] {
   }
 }
 
+function highlightCode(code: string, language: string) {
+  const pattern = /(\/\/[^\\n]*|#[^\\n]*|\/\*[\s\S]*?\*\/|\b(?:const|let|var|function|return|if|else|for|while|class|new|try|catch|throw|import|from|export|default|async|await|def|print|True|False|None|and|or|not|in|is|pass|break|continue|lambda|with|as|yield|this|console|log)\b|\b\d+(?:\.\d+)?\b|"(?:\\\\.|[^"\\\\])*"|'(?:\\\\.|[^'\\\\])*'|\x60(?:\\\\.|[^\x60\\\\])*\x60)/g
+  const parts: { text: string; kind: string }[] = []
+  let lastIndex = 0
+  for (const match of code.matchAll(pattern)) {
+    const index = match.index ?? 0
+    if (index > lastIndex) parts.push({ text: code.slice(lastIndex, index), kind: 'plain' })
+    const value = match[0]
+    let kind = 'keyword'
+    if (/^(\/\/|#|\/\*)/.test(value)) kind = 'comment'
+    else if (/^["'\x60]/.test(value)) kind = 'string'
+    else if (/^\d/.test(value)) kind = 'number'
+    else if (/^(print|console|log)$/.test(value)) kind = 'builtin'
+    parts.push({ text: value, kind })
+    lastIndex = index + value.length
+  }
+  if (lastIndex < code.length) parts.push({ text: code.slice(lastIndex), kind: 'plain' })
+  return parts
+}
+
 function makeId() {
   return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`
 }
@@ -113,6 +133,7 @@ function App() {
   const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections' | 'favorites' | 'tools' | 'archive' | 'settings'>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const globalSearchInputRef = useRef<HTMLInputElement | null>(null)
+  const codeHighlightRef = useRef<HTMLElement | null>(null)
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null)
   const [collectionSearch, setCollectionSearch] = useState('')
   const [collectionDraft, setCollectionDraft] = useState<CollectionDraft | null>(null)
@@ -1217,11 +1238,14 @@ function App() {
                           <span key={index}>{index + 1}</span>
                         ))}
                       </div>
+                      <div className="code-editor-stage">
+                        <pre className="code-highlight-layer" aria-hidden="true" ref={codeHighlightRef}>{highlightCode(snippetDraft.code, snippetDraft.language).map((part, index) => <span className={`syntax-${part.kind}`} key={index}>{part.text}</span>)}{snippetDraft.code.endsWith('\n') ? ' ' : ''}</pre>
                       <textarea
                         className="content-input snippet-code-input"
                         id="snippet-code"
                         value={snippetDraft.code}
                         onChange={(event) => updateSnippetDraft('code', event.target.value)}
+                        onScroll={(event) => { if (codeHighlightRef.current) { codeHighlightRef.current.scrollTop = event.currentTarget.scrollTop; codeHighlightRef.current.scrollLeft = event.currentTarget.scrollLeft } }}
                         onKeyDown={(event) => {
                           if (event.key === 'Tab') {
                             event.preventDefault()
@@ -1244,6 +1268,7 @@ function App() {
                         aria-invalid={Boolean(snippetErrors.code)}
                         aria-describedby={snippetErrors.code ? 'snippet-code-error' : undefined}
                       />
+                      </div>
                     </div>
                     {snippetErrors.code && <span className="snippet-error" id="snippet-code-error" role="alert">{snippetErrors.code}</span>}
                     <section className="snippet-output" aria-labelledby="snippet-output-title">
