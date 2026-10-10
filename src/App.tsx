@@ -109,7 +109,7 @@ function App() {
   const [notes, setNotes] = useState<Note[]>(readNotes)
   const [snippets, setSnippets] = useState<Snippet[]>(readSnippets)
   const [collections, setCollections] = useState<Collection[]>(readCollections)
-  const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections' | 'favorites' | 'tools' | 'archive'>('dashboard')
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections' | 'favorites' | 'tools' | 'archive' | 'settings'>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const globalSearchInputRef = useRef<HTMLInputElement | null>(null)
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null)
@@ -639,6 +639,7 @@ function App() {
             <span className="nav-count">{collections.length}</span>
           </button>
           <button className={`nav-item${activeSection === 'archive' ? ' is-active' : ''}`} type="button" onClick={() => setActiveSection('archive')} aria-current={activeSection === 'archive' ? 'page' : undefined}><FolderOpen size={16} aria-hidden="true" /><span>Archive</span><span className="nav-count">{notes.filter((note) => note.archived).length + snippets.filter((snippet) => snippet.archived).length}</span></button>
+          <button className={`nav-item${activeSection === 'settings' ? ' is-active' : ''}`} type="button" onClick={() => setActiveSection('settings')} aria-current={activeSection === 'settings' ? 'page' : undefined}><Wrench size={16} aria-hidden="true" /><span>Settings & backup</span></button>
           <button className={`nav-item${activeSection === 'tools' ? ' is-active' : ''}`} type="button" onClick={() => setActiveSection('tools')}><Wrench size={16} aria-hidden="true" /><span>Developer tools</span></button>
         </div>
 
@@ -718,7 +719,7 @@ function App() {
             <button className="icon-button sidebar-toggle" type="button" onClick={() => setSidebarCollapsed((collapsed) => !collapsed)} aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"} title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}>
               {sidebarCollapsed ? <PanelLeftOpen size={16} aria-hidden="true" /> : <PanelLeftClose size={16} aria-hidden="true" />}
             </button>
-            <div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{activeSection === 'dashboard' ? 'Dashboard' : activeSection === 'notes' ? 'Notes' : activeSection === 'snippets' ? 'Code snippets' : activeSection === 'favorites' ? 'Favorites' : activeSection === 'archive' ? 'Archive' : 'Collections'}</strong></div>
+            <div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{activeSection === 'dashboard' ? 'Dashboard' : activeSection === 'notes' ? 'Notes' : activeSection === 'snippets' ? 'Code snippets' : activeSection === 'favorites' ? 'Favorites' : activeSection === 'archive' ? 'Archive' : activeSection === 'settings' ? 'Settings & backup' : 'Collections'}</strong></div>
           </div>
           <div className="global-search-wrap">
             <label className="global-search-box">
@@ -894,6 +895,8 @@ function App() {
             </div>
             <p className="dashboard-local-note"><span className="status-dot" aria-hidden="true" />Local storage is device-specific. Backups let you move your data safely.</p>
           </section>
+        ) : activeSection === 'settings' ? (
+          <section className="settings-workspace" aria-label="Settings and backup"><div className="settings-card"><div className="settings-card-icon"><Download size={18}/></div><div className="settings-card-copy"><h2>Backup and restore</h2><p>Export your notes, snippets, and collections to a JSON file. Restore from a backup when moving devices or recovering data.</p><div className="settings-actions"><button className="primary-button" type="button" onClick={exportBackup}><Download size={14}/>Export backup</button><button className="secondary-button" type="button" onClick={() => backupInputRef.current?.click()}><Upload size={14}/>Restore backup</button></div></div></div><div className="settings-card"><div className="settings-card-icon"><FileText size={18}/></div><div className="settings-card-copy"><h2>Workspace data</h2><p>Your content is saved locally in this browser. It is not automatically synced across devices.</p><div className="settings-metrics"><span><strong>{notes.length}</strong> notes</span><span><strong>{snippets.length}</strong> snippets</span><span><strong>{collections.length}</strong> collections</span><span><strong>{notes.filter((note) => note.archived).length + snippets.filter((snippet) => snippet.archived).length}</strong> archived</span></div></div></div><div className="settings-warning"><AlertCircle size={16}/><p>Before clearing browser data or switching devices, export a backup. Restoring a backup replaces the current workspace data.</p></div><input ref={backupInputRef} className="visually-hidden" type="file" accept="application/json,.json" onChange={importBackup} aria-label="Choose DevVault backup file" /></section>
         ) : activeSection === 'archive' ? (
           <section className="archive-workspace" aria-label="Archived items"><div className="archive-intro"><h2>Archive</h2><p>Keep old items without permanently deleting them.</p></div><div className="archive-list">
           {notes.filter((note) => note.archived).map((note) => <article className="archive-row" key={`archive-note-${note.id}`}><FileText size={17} /><div className="archive-item-info"><strong>{note.title.trim() || 'Untitled note'}</strong><span>Note · {note.content.trim().slice(0,100) || 'No content'}</span></div><button className="secondary-button" type="button" onClick={() => restoreNote(note.id)}>Restore</button><button className="icon-button delete-button" type="button" aria-label="Permanently delete note" onClick={() => { commitNotes(notes.filter((item) => item.id !== note.id)); setFeedback('Archived note permanently deleted.') }}><Trash2 size={15}/></button></article>)}
