@@ -108,7 +108,7 @@ function App() {
   const [notes, setNotes] = useState<Note[]>(readNotes)
   const [snippets, setSnippets] = useState<Snippet[]>(readSnippets)
   const [collections, setCollections] = useState<Collection[]>(readCollections)
-  const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections' | 'favorites'>('dashboard')
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections' | 'favorites' | 'tools'>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const globalSearchInputRef = useRef<HTMLInputElement | null>(null)
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null)
@@ -124,6 +124,10 @@ function App() {
   const [isRunning, setIsRunning] = useState(false)
   const [runFinished, setRunFinished] = useState(false)
   const [search, setSearch] = useState('')
+  const [toolName, setToolName] = useState<'json' | 'base64' | 'url'>('json')
+  const [toolInput, setToolInput] = useState('')
+  const [toolOutput, setToolOutput] = useState('')
+  const [toolError, setToolError] = useState('')
   const [globalSearch, setGlobalSearch] = useState('')
   const [globalSearchOpen, setGlobalSearchOpen] = useState(false)
   const [activeTag, setActiveTag] = useState<string | null>(null)
@@ -323,6 +327,15 @@ function App() {
     setActiveTag(null)
     setSearch('')
     setFeedback('New note created.')
+  }
+
+  function runUtilityTool() {
+    setToolError('')
+    try {
+      if (toolName === 'json') setToolOutput(JSON.stringify(JSON.parse(toolInput), null, 2))
+      else if (toolName === 'base64') setToolOutput(btoa(toolInput))
+      else setToolOutput(encodeURIComponent(toolInput))
+    } catch { setToolError(toolName === 'json' ? 'Invalid JSON. Check commas, quotes, and brackets.' : 'Could not process this input.'); setToolOutput('') }
   }
 
   function toggleNoteFavorite(noteId: string) {
@@ -604,6 +617,9 @@ function App() {
           </button>
         </div>
 
+          <button className={`nav-item${activeSection === 'tools' ? ' is-active' : ''}`} type="button" onClick={() => setActiveSection('tools')}><Wrench size={16} aria-hidden="true" /><span>Developer tools</span></button>
+        </div>
+
         {activeSection === 'collections' && (
           <div className="sidebar-section collection-sidebar-section">
             <p className="sidebar-label">Your collections</p>
@@ -736,9 +752,9 @@ function App() {
         <section className="page-heading" aria-labelledby="page-title">
           <div>
             <p className="eyebrow">{activeSection === 'notes' ? 'PERSONAL KNOWLEDGE BASE' : activeSection === 'snippets' ? 'DEVELOPER TOOLBOX' : 'ORGANIZE YOUR WORK'}</p>
-            <h1 id="page-title">{activeSection === 'notes' ? 'Your notes' : activeSection === 'snippets' ? 'Code snippets' : selectedCollection?.name ?? (isUncategorizedSelected ? 'Uncategorized' : 'Collections')}</h1>
+            <h1 id="page-title">{activeSection === 'notes' ? 'Your notes' : activeSection === 'snippets' ? 'Code snippets' : activeSection === 'tools' ? 'Developer tools' : selectedCollection?.name ?? (isUncategorizedSelected ? 'Uncategorized' : 'Collections')}</h1>
             <p className="page-description">
-              {activeSection === 'notes' ? 'A quiet place for the things worth remembering.' : activeSection === 'snippets' ? 'Keep useful code close at hand.' : selectedCollection?.description || (isUncategorizedSelected ? 'Notes and snippets not assigned to a collection.' : 'Group related notes and code snippets together.')}
+              {activeSection === 'notes' ? 'A quiet place for the things worth remembering.' : activeSection === 'snippets' ? 'Keep useful code close at hand.' : activeSection === 'tools' ? 'Small utilities for everyday development tasks.' : selectedCollection?.description || (isUncategorizedSelected ? 'Notes and snippets not assigned to a collection.' : 'Group related notes and code snippets together.')}
             </p>
           </div>
           <button
@@ -856,6 +872,8 @@ function App() {
             </div>
             <p className="dashboard-local-note"><span className="status-dot" aria-hidden="true" />Local storage is device-specific. Backups let you move your data safely.</p>
           </section>
+        ) : activeSection === 'tools' ? (
+          <section className="tools-workspace" aria-label="Developer utilities"><div className="tools-intro"><p className="eyebrow">UTILITY DESK</p><h2>Get the small jobs done.</h2><p>Format JSON and encode text without leaving your workspace. Runs in your browser.</p></div><div className="tool-tabs" role="tablist" aria-label="Choose a developer tool"><button type="button" role="tab" aria-selected={toolName === 'json'} className={toolName === 'json' ? 'is-active' : ''} onClick={() => { setToolName('json'); setToolOutput(''); setToolError('') }}>JSON formatter</button><button type="button" role="tab" aria-selected={toolName === 'base64'} className={toolName === 'base64' ? 'is-active' : ''} onClick={() => { setToolName('base64'); setToolOutput(''); setToolError('') }}>Base64 encoder</button><button type="button" role="tab" aria-selected={toolName === 'url'} className={toolName === 'url' ? 'is-active' : ''} onClick={() => { setToolName('url'); setToolOutput(''); setToolError('') }}>URL encoder</button></div><div className="tool-workbench"><label htmlFor="tool-input">{toolName === 'json' ? 'JSON input' : 'Text input'}</label><textarea id="tool-input" className="tool-textarea" value={toolInput} onChange={(event) => { setToolInput(event.target.value); setToolError('') }} placeholder={toolName === 'json' ? '{\n  "name": "DevVault",\n  "localFirst": true\n}' : 'Enter text to encode…'} spellCheck={false} /><div className="tool-actions"><button className="primary-button" type="button" onClick={runUtilityTool}><Play size={14} />{toolName === 'json' ? 'Format JSON' : 'Encode text'}</button><button className="secondary-button" type="button" onClick={() => { setToolInput(''); setToolOutput(''); setToolError('') }}>Clear</button></div>{toolError && <p className="tool-error" role="alert">{toolError}</p>}{toolOutput && <div className="tool-output"><div className="tool-output-heading"><strong>Output</strong><button className="text-button" type="button" onClick={() => { void navigator.clipboard.writeText(toolOutput).then(() => setFeedback('Output copied.')).catch(() => setToolError('Clipboard access was blocked by your browser.')) }}><Copy size={13} />Copy output</button></div><pre>{toolOutput}</pre></div>}</div></section>
         ) : activeSection === 'favorites' ? (
           <section className="favorites-workspace" aria-label="Favorite items"><div className="favorites-heading"><div><h2>Quick access</h2><p>Star notes and snippets to keep them close at hand.</p></div><span>{notes.filter((note) => note.favorite).length + snippets.filter((snippet) => snippet.favorite).length} saved</span></div><div className="favorites-grid">
           {notes.filter((note) => note.favorite).map((note) => <article className="favorite-card" key={note.id}><div className="favorite-card-type"><FileText size={14} /> NOTE <button className="icon-button favorite-toggle is-favorite" type="button" onClick={() => toggleNoteFavorite(note.id)} aria-label="Remove note from favorites"><Star size={15} fill="currentColor" /></button></div><button className="favorite-card-open" type="button" onClick={() => { setActiveSection('notes'); setActiveNoteId(note.id); setActiveTag(null) }}><strong>{note.title.trim() || 'Untitled note'}</strong><p>{note.content.trim() || 'No content yet'}</p></button></article>)}
