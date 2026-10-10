@@ -909,6 +909,26 @@ function App() {
               <button className="dashboard-stat" type="button" onClick={() => setActiveSection('snippets')}><span className="dashboard-stat-icon"><Code2 size={17} aria-hidden="true" /></span><span className="dashboard-stat-label">Code snippets</span><strong>{snippets.length}</strong><span className="dashboard-stat-foot">Browse saved code <span aria-hidden="true">↗</span></span></button>
               <button className="dashboard-stat" type="button" onClick={() => setActiveSection('collections')}><span className="dashboard-stat-icon"><FolderOpen size={17} aria-hidden="true" /></span><span className="dashboard-stat-label">Collections</span><strong>{collections.length}</strong><span className="dashboard-stat-foot">Organize your work <span aria-hidden="true">↗</span></span></button>
             </div>
+            <section className="knowledge-graph-card" aria-label="Knowledge graph preview">
+              <div className="knowledge-graph-heading">
+                <div className="knowledge-graph-title"><span className="knowledge-graph-mark"><Network size={20} aria-hidden="true" /></span><div><h3>Knowledge Graph</h3><p>Explore how your workspace fits together.</p></div></div>
+                <div className="knowledge-graph-filters"><span className="graph-filter is-active">Overview</span><span className="graph-filter">Notes</span><span className="graph-filter">Code</span><span className="graph-filter">Collections</span></div>
+              </div>
+              <div className="knowledge-graph-canvas">
+                <svg className="knowledge-graph-lines" viewBox="0 0 700 280" preserveAspectRatio="none" aria-hidden="true">
+                  <defs><linearGradient id="graphLine" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#7860ff" stopOpacity=".12"/><stop offset="50%" stopColor="#9d7aff" stopOpacity=".8"/><stop offset="100%" stopColor="#36c8ff" stopOpacity=".16"/></linearGradient></defs>
+                  <path d="M350 142 L190 74 L92 132 M350 142 L280 42 L445 54 L540 116 M350 142 L205 214 L92 132 M350 142 L480 218 L590 178 M350 142 L445 54 M190 74 L280 42 M205 214 L330 245 L480 218 M540 116 L590 178" stroke="url(#graphLine)" strokeWidth="1.3" fill="none"/>
+                  <path d="M92 132 L205 214 L190 74 M445 54 L540 116 L480 218" stroke="#8c74ff" strokeOpacity=".28" strokeDasharray="3 6" fill="none"/>
+                </svg>
+                <button className="graph-node graph-node-main" type="button" onClick={() => setActiveSection('dashboard')}><span className="graph-node-icon"><Network size={19}/></span><strong>DevVault</strong><small>{notes.length + snippets.length} saved items</small></button>
+                <button className="graph-node graph-node-notes" type="button" onClick={() => setActiveSection('notes')}><span className="graph-node-icon"><FileText size={16}/></span><strong>Notes</strong><small>{notes.length} items</small></button>
+                <button className="graph-node graph-node-snippets" type="button" onClick={() => setActiveSection('snippets')}><span className="graph-node-icon"><Code2 size={16}/></span><strong>Code</strong><small>{snippets.length} snippets</small></button>
+                <button className="graph-node graph-node-collections" type="button" onClick={() => setActiveSection('collections')}><span className="graph-node-icon"><FolderOpen size={16}/></span><strong>Collections</strong><small>{collections.length} groups</small></button>
+                <button className="graph-node graph-node-tools" type="button" onClick={() => setActiveSection('tools')}><span className="graph-node-icon"><Wrench size={15}/></span><strong>Dev tools</strong><small>Utilities</small></button>
+                <button className="graph-node graph-node-search" type="button" onClick={() => document.querySelector<HTMLInputElement>('.global-search-input')?.focus()}><span className="graph-node-icon"><Search size={15}/></span><strong>Search</strong><small>Find anything</small></button>
+              </div>
+              <div className="knowledge-graph-footer"><span><span className="graph-live-dot" />Workspace overview</span><button className="text-button" type="button" onClick={() => setActiveSection('collections')}>Explore workspace <ArrowRight size={13} aria-hidden="true" /></button></div>
+            </section>
             <div className="dashboard-recent-grid">
               <section className="dashboard-section">
                 <div className="dashboard-section-heading"><div><h3>Recently updated notes</h3><p>Your latest saved knowledge</p></div><button className="text-button" type="button" onClick={() => setActiveSection('notes')}>All notes →</button></div>
