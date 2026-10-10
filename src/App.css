@@ -612,7 +612,7 @@
 .tags-input::placeholder { color: #77748c; }
 .editor-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
 .tag-chip { display: inline-flex; align-items: center; gap: 5px; padding: 5px 8px; color: #c9b8f5; border: 1px solid rgba(178, 154, 255, 0.17); border-radius: 7px; background: rgba(152, 115, 255, 0.075); font-size: 9px; }
-.content-input { flex: 1; width: 100%; min-height: 230px; margin-top: 21px; padding: 0; resize: vertical; color: #d2cfe0; border: 0; outline: 0; background: transparent; font-size: 13px; line-height: 1.85; }
+.content-input { flex: 1; width: 100%; min-height: 230px; margin-top: 0; padding: 0; resize: vertical; color: #d2cfe0; border: 0; outline: 0; background: transparent; font-size: 13px; line-height: 1.85; }
 .content-input::placeholder { color: #79758d; }
 .editor-footer { display: flex; justify-content: space-between; gap: 10px; padding-top: 11px; color: #817d94; border-top: 1px solid rgba(193, 181, 255, 0.1); font-size: 9px; }
 .list-empty-state, .editor-empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 310px; padding: 26px 17px; text-align: center; }
