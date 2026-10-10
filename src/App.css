@@ -1713,3 +1713,39 @@ body, .app-shell { background: var(--dv-bg); }
   .knowledge-graph-canvas { min-height: 320px; }
   .graph-data-node { min-width: 76px; max-width: 100px; min-height: 68px; }
 }
+
+
+/* Knowledge graph usability pass: generous space, readable nodes, expand on demand. */
+.knowledge-graph-controls { flex-wrap: wrap; }
+.graph-expand-button {
+  flex: 0 0 auto; padding: 8px 10px; border: 1px solid #34384d; border-radius: 9px;
+  color: #d6d1e8; background: #141622; font-size: 11px; cursor: pointer;
+}
+.graph-expand-button:hover { border-color: #8973c9; background: #1a1b2b; }
+.knowledge-graph-canvas { min-height: 400px; }
+.knowledge-graph-canvas.is-expanded { min-height: 650px; }
+.graph-data-node { min-width: 112px; max-width: 142px; min-height: 86px; padding: 10px; }
+.graph-data-node strong { max-width: 124px; font-size: 11px; }
+.graph-data-node small { max-width: 124px; font-size: 10px; }
+.graph-node-tag { font-size: 9px; }
+.knowledge-graph-canvas.is-expanded .graph-data-node { min-width: 132px; max-width: 164px; min-height: 98px; padding: 12px; }
+.knowledge-graph-canvas.is-expanded .graph-data-node strong { max-width: 144px; font-size: 12px; }
+.knowledge-graph-canvas.is-expanded .graph-data-node small { max-width: 144px; font-size: 10px; }
+@media (max-width: 760px) {
+  .knowledge-graph-canvas { min-height: 390px; }
+  .knowledge-graph-canvas.is-expanded { min-height: 570px; }
+  .knowledge-graph-controls { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  .graph-expand-button { grid-column: 1 / -1; justify-self: start; }
+  .graph-data-node { min-width: 100px; max-width: 124px; min-height: 80px; padding: 8px; }
+  .graph-data-node strong { max-width: 108px; font-size: 10px; }
+  .graph-data-node small { max-width: 108px; font-size: 9px; }
+  .knowledge-graph-canvas.is-expanded .graph-data-node { min-width: 112px; max-width: 136px; }
+}
+@media (max-width: 420px) {
+  .knowledge-graph-canvas { min-height: 370px; }
+  .knowledge-graph-canvas.is-expanded { min-height: 540px; }
+  .graph-data-node { min-width: 88px; max-width: 108px; min-height: 74px; padding: 6px; }
+  .graph-data-node strong { max-width: 94px; font-size: 9px; }
+  .graph-data-node small { max-width: 94px; font-size: 8px; }
+  .graph-node-tag { max-width: 90px; font-size: 8px; }
+}
