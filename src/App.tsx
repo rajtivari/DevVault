@@ -172,18 +172,18 @@ function App() {
       ...collections.map((item) => ({ id: item.id, label: item.name, kind: 'collection' as const, detail: 'Collection', tags: [] as string[], collectionId: item.id })),
     ].slice(0, 8)
     const groups = [...new Set(entries.filter((entry) => entry.kind !== 'collection').map((entry) => entry.collectionId || 'ungrouped'))]
-    const centers = groups.map((id, index) => ({ id, x: groups.length === 1 ? 50 : 27 + (index % 2) * 46, y: groups.length <= 2 ? 50 : 28 + Math.floor(index / 2) * 44 }))
+    const centers = groups.map((id, index) => ({ id, x: groups.length === 1 ? 50 : 30 + (index % 2) * 40, y: 50 }))
     return entries.map((entry) => {
       if (entry.kind === 'collection') {
         const center = centers.find((item) => item.id === entry.id)
-        return { ...entry, x: center?.x ?? 50, y: center?.y ?? 50 }
+        return { ...entry, x: 50, y: 18 + Math.max(0, collections.findIndex((item) => item.id === entry.id)) * 64 }
       }
       const group = entry.collectionId || 'ungrouped'
       const center = centers.find((item) => item.id === group) || { x: 50, y: 50 }
       const siblings = entries.filter((item) => item.kind !== 'collection' && (item.collectionId || 'ungrouped') === group)
       const index = siblings.findIndex((item) => item.id === entry.id)
       const angle = (index / Math.max(siblings.length, 1)) * Math.PI * 2 - Math.PI / 2
-      const radius = siblings.length < 2 ? 0 : siblings.length === 2 ? 14 : 18
+      const radius = siblings.length < 2 ? 0 : siblings.length === 2 ? 10 : 13
       return { ...entry, x: Math.max(12, Math.min(88, center.x + Math.cos(angle) * radius)), y: Math.max(17, Math.min(83, center.y + Math.sin(angle) * radius)) }
     })
   }, [sortedNotes, snippets, collections])
