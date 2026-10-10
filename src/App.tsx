@@ -186,12 +186,24 @@ function App() {
       return { ...entry, x: Math.max(12, Math.min(88, center.x + Math.cos(angle) * radius)), y: Math.max(17, Math.min(83, center.y + Math.sin(angle) * radius)) }
     })
   }, [sortedNotes, snippets, collections])
-  const visibleKnowledgeNodes = useMemo(() => knowledgeNodes.filter((node) => {
-    const matchesType = graphFilter === 'all' || (graphFilter === 'notes' && node.kind === 'note') || (graphFilter === 'snippets' && node.kind === 'snippet') || (graphFilter === 'collections' && node.kind === 'collection')
+  const visibleKnowledgeNodes = useMemo(() => {
     const query = graphQuery.trim().toLowerCase()
-    const matchesQuery = !query || node.label.toLowerCase().includes(query) || node.detail.toLowerCase().includes(query) || node.tags.some((tag) => tag.toLowerCase().includes(query))
-    return matchesType && matchesQuery
-  }), [knowledgeNodes, graphFilter, graphQuery])
+    const matches = knowledgeNodes.filter((node) => {
+      const matchesType = graphFilter === 'all' || (graphFilter === 'notes' && node.kind === 'note') || (graphFilter === 'snippets' && node.kind === 'snippet') || (graphFilter === 'collections' && node.kind === 'collection')
+      const matchesQuery = !query || node.label.toLowerCase().includes(query) || node.detail.toLowerCase().includes(query) || node.tags.some((tag) => tag.toLowerCase().includes(query))
+      return matchesType && matchesQuery
+    })
+    // Reflow filtered results into a fresh grid so searching never leaves nodes stacked
+    // at their old coordinates. Keep the overview intentionally capped for readability.
+    const visible = matches.slice(0, 12)
+    const columns = visible.length <= 2 ? visible.length : visible.length <= 6 ? 3 : 4
+    const rows = Math.ceil(visible.length / Math.max(columns, 1))
+    return visible.map((node, index) => ({
+      ...node,
+      x: columns === 1 ? 50 : 14 + (index % columns) * (72 / (columns - 1)),
+      y: rows === 1 ? 50 : 22 + Math.floor(index / columns) * (56 / (rows - 1)),
+    }))
+  }, [knowledgeNodes, graphFilter, graphQuery])
   const knowledgeEdges = useMemo(() => {
     const edges: Array<{ from: number; to: number; related: boolean }> = []
     visibleKnowledgeNodes.forEach((node, index) => {
