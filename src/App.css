@@ -1610,3 +1610,20 @@ body, .app-shell { background: var(--dv-bg); }
 @media (prefers-reduced-motion: reduce) {
   .dashboard-stat, .graph-node { transition: none; }
 }
+
+
+/* Data-driven knowledge graph nodes and empty state */
+.graph-data-node { max-width: 125px; min-width: 76px; }
+.graph-data-node strong { max-width: 108px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.graph-data-note .graph-node-icon { color: #a9d6ff; border-color: rgba(88, 169, 255, .35); background: rgba(58, 136, 230, .13); }
+.graph-data-snippet .graph-node-icon { color: #b6a0ff; border-color: rgba(157, 124, 255, .35); background: rgba(121, 88, 221, .16); }
+.graph-data-collection .graph-node-icon { color: #ffc18c; border-color: rgba(255, 169, 106, .3); background: rgba(230, 134, 68, .12); }
+.graph-empty-state { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #a995ff; text-align: center; padding: 24px; }
+.graph-empty-state strong { color: #e5e1f5; font-size: 13px; }
+.graph-empty-state span { max-width: 260px; color: #8589a0; font-size: 11px; }
+@media (max-width: 520px) {
+  .graph-data-node { min-width: 58px; max-width: 90px; padding: 5px 4px; }
+  .graph-data-node .graph-node-icon { width: 25px; height: 25px; }
+  .graph-data-node strong { max-width: 80px; font-size: 9px; }
+  .graph-data-node small { max-width: 78px; overflow: hidden; text-overflow: ellipsis; }
+}
