@@ -1,0 +1,64 @@
+:root {
+  font-family: Inter, "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  color: #d9d8e8;
+  background: #080811;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color-scheme: dark;
+
+  --text: #d9d8e8;
+  --text-strong: #f6f4ff;
+  --text-muted: #aaa8bf;
+  --text-faint: #77758d;
+  --accent: #a987ff;
+  --accent-bright: #bd9dff;
+  --blue: #65bfff;
+  --line: rgba(200, 190, 255, 0.12);
+  --line-strong: rgba(194, 172, 255, 0.23);
+  --surface: rgba(22, 21, 39, 0.74);
+
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: #080811;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 76% 4%, rgba(87, 55, 190, 0.2), transparent 38rem),
+    radial-gradient(ellipse at 22% 72%, rgba(25, 102, 174, 0.1), transparent 34rem),
+    linear-gradient(145deg, #080811 0%, #0b0b18 50%, #080a13 100%);
+}
+
+button, input, textarea, select { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgba(193, 166, 255, 0.92);
+  outline-offset: 3px;
+}
+
+button:disabled { cursor: not-allowed; }
+
+#root { min-height: 100vh; }
+
+::selection {
+  color: #fff;
+  background: rgba(137, 99, 236, 0.75);
+}

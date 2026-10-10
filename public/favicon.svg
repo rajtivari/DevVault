@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="glass" x1="10" y1="8" x2="54" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C5A9FF" stop-opacity=".48"/>
+      <stop offset=".52" stop-color="#735CE2" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#398BCF" stop-opacity=".38"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="12" y1="10" x2="53" y2="53" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E0CFFF"/>
+      <stop offset=".52" stop-color="#A88AFF"/>
+      <stop offset="1" stop-color="#69D7FF"/>
+    </linearGradient>
+    <linearGradient id="glyph" x1="24" y1="18" x2="44" y2="46" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F4EFFF"/>
+      <stop offset=".72" stop-color="#C9B9FF"/>
+      <stop offset="1" stop-color="#8BE5FF"/>
+    </linearGradient>
+    <linearGradient id="facet" x1="15" y1="16" x2="49" y2="47" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E5D7FF" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#77DFFF" stop-opacity=".04"/>
+    </linearGradient>
+  </defs>
+  <path d="M32 3.5 54.5 16.25v31.5L32 60.5 9.5 47.75v-31.5L32 3.5Z" fill="#11101F" fill-opacity=".94" stroke="url(#edge)" stroke-width="1.6"/>
+  <path d="M32 8.25 50.3 18.6v26.8L32 55.75 13.7 45.4V18.6L32 8.25Z" fill="url(#glass)" stroke="#E9E1FF" stroke-opacity=".36"/>
+  <path d="m32 8.25 18.3 10.36L32 29 13.7 18.6 32 8.25Z" fill="url(#facet)"/>
+  <path d="M22.5 17.25h9.75c8.58 0 14.25 5.82 14.25 14.75s-5.67 14.75-14.25 14.75H22.5v-29.5Zm6.3 5.4v18.7h3.45c4.8 0 7.8-3.62 7.8-9.35s-3-9.35-7.8-9.35H28.8Z" fill="url(#glyph)"/>
+  <circle cx="32.4" cy="29.8" r="2.25" fill="#26213F"/>
+  <path d="M32.4 32v5.9" stroke="#26213F" stroke-width="2.3" stroke-linecap="round"/>
+  <path d="M49.7 19.1v25.8" stroke="#8BE3FF" stroke-opacity=".56" stroke-width=".8"/>
+</svg>
