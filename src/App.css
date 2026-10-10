@@ -475,10 +475,10 @@
   border: 0;
   border-radius: 0;
   outline: 0;
-  color: #d8d5e8;
-  -webkit-text-fill-color: #d8d5e8;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   caret-color: #f4efff;
-  background: rgba(12, 12, 18, 0.96);
+  background: transparent;
   box-shadow: none;
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 12px;
