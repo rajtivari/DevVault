@@ -1492,3 +1492,121 @@ input, select, textarea, .tool-textarea, .tool-single-input {
 .dashboard-start-section, .dashboard-backup-section { padding: 15px; }
 @media (max-width: 760px) { .dashboard-workspace { gap: 12px; } .dashboard-welcome { padding: 17px; gap: 14px; } .dashboard-stat-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; } .dashboard-stat { padding: 11px 9px; grid-template-columns: 28px minmax(0, 1fr); column-gap: 8px; } .dashboard-stat > strong { font-size: 19px; } .dashboard-section { padding: 13px 11px 10px; } .dashboard-start-section, .dashboard-backup-section { padding: 13px; } }
 @media (max-width: 480px) { .dashboard-stat-grid { grid-template-columns: minmax(0, 1fr); } .dashboard-stat { grid-template-columns: 32px minmax(0, 1fr); padding: 12px; } .dashboard-welcome h1 { font-size: clamp(21px, 6vw, 25px); } .dashboard-recent-grid, .dashboard-lower-grid { grid-template-columns: minmax(0, 1fr); } }
+
+
+/* DevVault concept refresh — premium dark workspace, violet edge light, connected graph panel. */
+:root {
+  --dv-bg: #07080d;
+  --dv-panel: #0d0f18;
+  --dv-panel-raised: #111421;
+  --dv-border: #25283a;
+  --dv-violet: #9b75ff;
+  --dv-violet-soft: #6e50c8;
+}
+body, .app-shell { background: var(--dv-bg); }
+.app-shell { background: radial-gradient(ellipse at 56% 0%, rgba(72, 48, 137, .12), transparent 38%), var(--dv-bg); }
+.sidebar { background: rgba(8, 9, 15, .97); border-right-color: #222337; }
+.brand { letter-spacing: -.025em; }
+.brand-mark { filter: drop-shadow(0 0 10px rgba(145, 103, 255, .24)); }
+.nav-item { border: 1px solid transparent; border-radius: 9px; }
+.nav-item.is-active { background: linear-gradient(100deg, rgba(119, 83, 224, .22), rgba(89, 63, 159, .07)); border-color: rgba(151, 119, 255, .28); box-shadow: inset 2px 0 #a88aff, 0 0 24px rgba(107, 75, 214, .07); }
+.topbar { background: rgba(7, 8, 13, .78); border-bottom-color: #242638; backdrop-filter: blur(18px); }
+.search-box, .search-input { background: #0e1019; border-color: #2a2d41; border-radius: 10px; }
+.primary-button { background: linear-gradient(135deg, #b29aff, #8a62ef); border: 1px solid #b09aff; color: #100d1c; box-shadow: 0 4px 18px rgba(131, 91, 235, .16); }
+.primary-button:hover { filter: brightness(1.08); }
+.dashboard-workspace { gap: 14px; }
+.dashboard-welcome {
+  position: relative; overflow: hidden; isolation: isolate;
+  min-height: 150px; align-items: center; padding: 24px 26px;
+  border: 1px solid #292d43; border-radius: 14px;
+  background: radial-gradient(ellipse at 78% 45%, rgba(98, 67, 192, .23), transparent 31%), linear-gradient(112deg, #111321 0%, #0d0f19 58%, #171329 100%);
+}
+.dashboard-welcome::after {
+  content: ""; position: absolute; z-index: -1; right: 7%; top: -58px; width: 210px; height: 210px;
+  border: 1px solid rgba(168, 138, 255, .28); border-radius: 42% 58% 60% 40%;
+  transform: rotate(32deg); box-shadow: inset 0 0 45px rgba(135, 97, 255, .09), 0 0 50px rgba(126, 84, 255, .08);
+  pointer-events: none;
+}
+.dashboard-welcome h2 { font-size: clamp(25px, 3vw, 34px); letter-spacing: -.045em; line-height: 1.12; }
+.dashboard-welcome > div:first-child > p:last-child { max-width: 500px; line-height: 1.65; }
+.dashboard-quick-actions { position: relative; z-index: 1; gap: 8px; }
+.dashboard-stat-grid { gap: 10px; }
+.dashboard-stat {
+  position: relative; overflow: hidden; min-height: 105px; padding: 15px;
+  border: 1px solid #292d42; border-radius: 12px;
+  background: linear-gradient(145deg, rgba(19, 22, 37, .98), rgba(12, 14, 23, .98));
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+.dashboard-stat:hover { transform: translateY(-2px); border-color: #514476; background: linear-gradient(145deg, #19182c, #10121e); }
+.dashboard-stat-icon { border: 1px solid rgba(165, 134, 255, .2); border-radius: 10px; background: rgba(132, 97, 230, .13); color: #b9a0ff; }
+.dashboard-stat strong { font-size: 26px; letter-spacing: -.04em; }
+.dashboard-stat-foot { color: #8f91a8; }
+.dashboard-section { border: 1px solid #282b3d; border-radius: 12px; background: linear-gradient(145deg, #11131e, #0d0f17); padding: 16px; }
+.dashboard-section-heading h3 { letter-spacing: -.025em; }
+.dashboard-recent-item { border-radius: 8px; }
+.dashboard-recent-item:hover { background: rgba(143, 112, 240, .08); }
+.dashboard-start-item { border-radius: 8px; }
+.dashboard-start-item:hover { background: rgba(143, 112, 240, .07); }
+
+/* Knowledge graph is wired to real workspace counts and navigation. */
+.knowledge-graph-card {
+  min-width: 0; overflow: hidden; border: 1px solid #292d43; border-radius: 14px;
+  background: radial-gradient(ellipse at 50% 45%, rgba(55, 49, 115, .13), transparent 54%), linear-gradient(145deg, #0e111b, #090b12);
+  box-shadow: inset 0 1px rgba(255,255,255,.018);
+}
+.knowledge-graph-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 17px 19px 10px; }
+.knowledge-graph-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.knowledge-graph-mark { display: grid; place-items: center; width: 40px; height: 40px; flex: 0 0 40px; color: #b69aff; border: 1px solid rgba(157, 120, 255, .24); border-radius: 12px; background: rgba(119, 81, 220, .13); }
+.knowledge-graph-title h3 { margin: 0; color: #f1efff; font-size: 15px; font-weight: 650; letter-spacing: -.025em; }
+.knowledge-graph-title p { margin: 3px 0 0; color: #8d91a9; font-size: 11px; }
+.knowledge-graph-filters { display: flex; flex-wrap: wrap; gap: 5px; }
+.graph-filter { padding: 6px 10px; border: 1px solid #292d3f; border-radius: 8px; color: #999db5; background: #11131d; font-size: 11px; white-space: nowrap; }
+.graph-filter.is-active { border-color: #8d70ef; color: #e2d8ff; background: rgba(126, 89, 228, .18); }
+.knowledge-graph-canvas { position: relative; min-height: 285px; margin: 0 12px; overflow: hidden; border: 1px solid rgba(42, 48, 77, .7); border-radius: 11px; background-image: radial-gradient(circle at center, rgba(107, 91, 196, .10), transparent 55%), radial-gradient(rgba(157, 145, 255, .23) .8px, transparent .8px); background-size: auto, 25px 25px; }
+.knowledge-graph-canvas::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(8,10,17,.3), transparent 40%, rgba(8,10,17,.18)); pointer-events: none; }
+.knowledge-graph-lines { position: absolute; inset: 0; width: 100%; height: 100%; }
+.graph-node { position: absolute; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 82px; padding: 8px 9px; border: 1px solid #30334c; border-radius: 11px; color: #e6e2f9; background: rgba(16, 19, 32, .94); box-shadow: 0 7px 24px rgba(0,0,0,.25); cursor: pointer; transform: translate(-50%, -50%); transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease; }
+.graph-node:hover { z-index: 2; transform: translate(-50%, -52%); border-color: #9e80ff; box-shadow: 0 0 25px rgba(137, 99, 255, .2); }
+.graph-node-icon { display: grid; place-items: center; width: 30px; height: 30px; margin-bottom: 2px; color: #b8a0ff; border: 1px solid rgba(157, 124, 255, .35); border-radius: 10px; background: rgba(121, 88, 221, .16); }
+.graph-node strong { font-size: 11px; font-weight: 650; }
+.graph-node small { color: #898da6; font-size: 9px; white-space: nowrap; }
+.graph-node-main { left: 50%; top: 51%; min-width: 100px; padding: 12px 14px; border-color: #8c65ff; background: linear-gradient(145deg, rgba(46, 34, 80, .97), rgba(15, 18, 32, .98)); box-shadow: 0 0 0 5px rgba(136, 96, 255, .07), 0 0 35px rgba(123, 84, 255, .23); }
+.graph-node-main .graph-node-icon { width: 38px; height: 38px; color: #fff; border-radius: 50%; border-color: #a68bff; background: linear-gradient(145deg, #a27aff, #6443d4); }
+.graph-node-notes { left: 27%; top: 27%; }
+.graph-node-snippets { left: 72%; top: 25%; }
+.graph-node-collections { left: 77%; top: 72%; }
+.graph-node-tools { left: 28%; top: 75%; }
+.graph-node-search { left: 50%; top: 12%; }
+.knowledge-graph-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 18px 13px; color: #8589a0; font-size: 10px; }
+.knowledge-graph-footer > span { display: inline-flex; align-items: center; gap: 7px; }
+.graph-live-dot { width: 6px; height: 6px; border-radius: 50%; background: #7d67f4; box-shadow: 0 0 9px rgba(125, 103, 244, .7); }
+@media (min-width: 1100px) {
+  .dashboard-workspace { gap: 16px; }
+  .dashboard-stat { min-height: 112px; }
+  .knowledge-graph-canvas { min-height: 330px; }
+}
+@media (max-width: 760px) {
+  .dashboard-welcome { padding: 19px; align-items: flex-start; }
+  .dashboard-welcome::after { right: -55px; top: -70px; opacity: .65; }
+  .dashboard-quick-actions { justify-content: flex-start; }
+  .knowledge-graph-heading { align-items: flex-start; flex-direction: column; padding: 14px 13px 10px; gap: 12px; }
+  .knowledge-graph-filters { max-width: 100%; }
+  .knowledge-graph-canvas { min-height: 270px; margin: 0 8px; }
+  .graph-node { min-width: 70px; padding: 7px; }
+  .graph-node strong { font-size: 10px; }
+  .graph-node small { font-size: 8px; }
+  .knowledge-graph-footer { padding: 10px 12px; }
+}
+@media (max-width: 420px) {
+  .dashboard-stat-grid { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-stat { min-height: 82px; }
+  .knowledge-graph-canvas { min-height: 250px; }
+  .graph-node-main { min-width: 86px; }
+  .graph-node-notes { left: 23%; top: 29%; }
+  .graph-node-snippets { left: 76%; top: 27%; }
+  .graph-node-collections { left: 78%; top: 74%; }
+  .graph-node-tools { left: 22%; top: 74%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-stat, .graph-node { transition: none; }
+}
