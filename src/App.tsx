@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AlertCircle, Check, Code2, Copy, FileText, FolderOpen, Home, Pencil, Play, Plus, Search, Save, Tag, Trash2, X } from 'lucide-react'
+import { AlertCircle, Check, Code2, Copy, Download, FileText, FolderOpen, Home, Pencil, Play, Plus, Search, Save, Tag, Trash2, Upload, X } from 'lucide-react'
 import { createPreviewDocument, getRunnerMode, runJavaScriptInSandbox, type ConsoleEntry, type SandboxRun } from './codeRunner'
 import './App.css'
 
@@ -128,6 +128,7 @@ function App() {
   const [snippetStorageError, setSnippetStorageError] = useState(false)
   const [collectionStorageError, setCollectionStorageError] = useState(false)
   const [tagDraft, setTagDraft] = useState<{ noteId: string; value: string } | null>(null)
+  const backupInputRef = useRef<HTMLInputElement | null>(null)
   const sandboxRunRef = useRef<SandboxRun | null>(null)
 
   const sortedNotes = useMemo(
@@ -192,6 +193,64 @@ function App() {
   const collectionSnippets = selectedCollectionId === null ? [] : snippets.filter((snippet) => belongsToCollection(snippet.collectionId))
 
   useEffect(() => () => sandboxRunRef.current?.cancel(), [])
+
+  function exportBackup() {
+    const backup = { app: 'DevVault', formatVersion: 1, exportedAt: new Date().toISOString(), notes, snippets, collections }
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `devvault-backup-${new Date().toISOString().slice(0, 10)}.json`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+    setFeedback('Backup exported. Keep the file somewhere safe.')
+  }
+
+  async function importBackup(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    try {
+      const parsed: unknown = JSON.parse(await file.text())
+      if (typeof parsed !== 'object' || parsed === null) throw new Error('Choose a valid DevVault backup.')
+      const data = parsed as Record<string, unknown>
+      if (data.app !== 'DevVault' || data.formatVersion !== 1 ||
+          !Array.isArray(data.notes) || !Array.isArray(data.snippets) || !Array.isArray(data.collections)) {
+        throw new Error('This file is not a supported DevVault backup.')
+      }
+      const validNotes = data.notes.every((item) => typeof item === 'object' && item !== null &&
+        typeof (item as Note).id === 'string' && typeof (item as Note).title === 'string' &&
+        typeof (item as Note).content === 'string' && Array.isArray((item as Note).tags) &&
+        typeof (item as Note).updatedAt === 'string')
+      const validSnippets = data.snippets.every((item) => typeof item === 'object' && item !== null &&
+        typeof (item as Snippet).id === 'string' && typeof (item as Snippet).title === 'string' &&
+        typeof (item as Snippet).language === 'string' && typeof (item as Snippet).code === 'string' &&
+        Array.isArray((item as Snippet).tags) && typeof (item as Snippet).updatedAt === 'string')
+      const validCollections = data.collections.every((item) => typeof item === 'object' && item !== null &&
+        typeof (item as Collection).id === 'string' && typeof (item as Collection).name === 'string' &&
+        typeof (item as Collection).description === 'string')
+      if (!validNotes || !validSnippets || !validCollections) throw new Error('The backup contains invalid data and was not imported.')
+      const confirmed = window.confirm(`Restore this backup? It contains ${data.notes.length} notes, ${data.snippets.length} snippets, and ${data.collections.length} collections. This replaces the data currently saved in this browser.`)
+      if (!confirmed) return
+      commitNotes(data.notes as Note[])
+      commitSnippets(data.snippets as Snippet[])
+      commitCollections(data.collections as Collection[])
+      setActiveNoteId(null)
+      setActiveSnippetId(null)
+      setSnippetDraft(null)
+      setSnippetDirty(false)
+      setSelectedCollectionId(null)
+      setCollectionDraft(null)
+      setActiveSection('dashboard')
+      setSearch('')
+      setCollectionSearch('')
+      setFeedback('Backup restored successfully.')
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : 'Could not read this backup file.')
+    }
+  }
 
   function clearOutput() {
     sandboxRunRef.current?.cancel()
@@ -671,6 +730,9 @@ function App() {
             <div className="dashboard-welcome">
               <div><p className="eyebrow">YOUR DEVELOPER WORKSPACE</p><h2>Keep what you learn.</h2><p>Save useful ideas, code patterns, and notes — and find them when you need them.</p></div>
               <div className="dashboard-quick-actions">
+                <button className="secondary-button" type="button" onClick={exportBackup} title="Download a backup of your workspace"><Download size={15} aria-hidden="true" />Export backup</button>
+                <button className="secondary-button" type="button" onClick={() => backupInputRef.current?.click()} title="Restore from a DevVault backup"><Upload size={15} aria-hidden="true" />Import backup</button>
+                <input ref={backupInputRef} className="visually-hidden" type="file" accept="application/json,.json" onChange={importBackup} aria-label="Choose DevVault backup file" />
                 <button className="primary-button" type="button" onClick={createNote}><Plus size={15} aria-hidden="true" />New note</button>
                 <button className="secondary-button" type="button" onClick={createSnippet}><Code2 size={15} aria-hidden="true" />New snippet</button>
               </div>
