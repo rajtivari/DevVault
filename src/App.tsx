@@ -102,7 +102,7 @@ function readCollections(): Collection[] {
   }
 }
 
-function highlightCode(code: string, language: string) {
+function highlightCode(code: string) {
   const pattern = /(\/\/[^\\n]*|#[^\\n]*|\/\*[\s\S]*?\*\/|\b(?:const|let|var|function|return|if|else|for|while|class|new|try|catch|throw|import|from|export|default|async|await|def|print|True|False|None|and|or|not|in|is|pass|break|continue|lambda|with|as|yield|this|console|log)\b|\b\d+(?:\.\d+)?\b|"(?:\\\\.|[^"\\\\])*"|'(?:\\\\.|[^'\\\\])*'|\x60(?:\\\\.|[^\x60\\\\])*\x60)/g
   const parts: { text: string; kind: string }[] = []
   let lastIndex = 0
@@ -133,7 +133,7 @@ function App() {
   const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections' | 'favorites' | 'tools' | 'archive' | 'settings'>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const globalSearchInputRef = useRef<HTMLInputElement | null>(null)
-  const codeHighlightRef = useRef<HTMLElement | null>(null)
+  const codeHighlightRef = useRef<HTMLPreElement | null>(null)
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null)
   const [collectionSearch, setCollectionSearch] = useState('')
   const [collectionDraft, setCollectionDraft] = useState<CollectionDraft | null>(null)
@@ -1239,7 +1239,7 @@ function App() {
                         ))}
                       </div>
                       <div className="code-editor-stage">
-                        <pre className="code-highlight-layer" aria-hidden="true" ref={codeHighlightRef}>{highlightCode(snippetDraft.code, snippetDraft.language).map((part, index) => <span className={`syntax-${part.kind}`} key={index}>{part.text}</span>)}{snippetDraft.code.endsWith('\n') ? ' ' : ''}</pre>
+                        <pre className="code-highlight-layer" aria-hidden="true" ref={codeHighlightRef}>{highlightCode(snippetDraft.code).map((part, index) => <span className={`syntax-${part.kind}`} key={index}>{part.text}</span>)}{snippetDraft.code.endsWith('\n') ? ' ' : ''}</pre>
                       <textarea
                         className="content-input snippet-code-input"
                         id="snippet-code"
