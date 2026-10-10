@@ -463,6 +463,9 @@
 .syntax-comment { color: #77758f; font-style: italic; }
 .syntax-builtin { color: #82d5f5; }
 .snippet-code-input {
+  position: relative;
+  z-index: 1;
+  display: block;
   width: 100%;
   min-width: 0;
   min-height: 230px;
@@ -472,7 +475,10 @@
   border: 0;
   border-radius: 0;
   outline: 0;
-  background: linear-gradient(135deg, rgba(89, 75, 148, 0.075), transparent 55%);
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  caret-color: #f4efff;
+  background: transparent;
   box-shadow: none;
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 12px;
