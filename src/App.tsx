@@ -165,16 +165,26 @@ function App() {
     [notes],
   )
   const knowledgeNodes = useMemo(() => {
-    const positions = [
-      { x: 18, y: 25 }, { x: 37, y: 15 }, { x: 66, y: 17 }, { x: 83, y: 40 },
-      { x: 78, y: 76 }, { x: 52, y: 85 }, { x: 24, y: 75 }, { x: 12, y: 49 },
-    ]
     const entries = [
       ...sortedNotes.map((item) => ({ id: item.id, label: item.title.trim() || 'Untitled note', kind: 'note' as const, detail: item.tags.length ? item.tags.slice(0, 2).join(' · ') : 'Note', tags: item.tags, collectionId: item.collectionId })),
       ...snippets.map((item) => ({ id: item.id, label: item.title.trim() || 'Untitled snippet', kind: 'snippet' as const, detail: item.language, tags: item.tags, collectionId: item.collectionId })),
       ...collections.map((item) => ({ id: item.id, label: item.name, kind: 'collection' as const, detail: 'Collection', tags: [] as string[], collectionId: item.id })),
     ].slice(0, 8)
-    return entries.map((entry, index) => ({ ...entry, ...positions[index] }))
+    const groups = [...new Set(entries.filter((entry) => entry.kind !== 'collection').map((entry) => entry.collectionId || 'ungrouped'))]
+    const centers = groups.map((id, index) => ({ id, x: groups.length === 1 ? 50 : 27 + (index % 2) * 46, y: groups.length <= 2 ? 50 : 28 + Math.floor(index / 2) * 44 }))
+    return entries.map((entry) => {
+      if (entry.kind === 'collection') {
+        const center = centers.find((item) => item.id === entry.id)
+        return { ...entry, x: center?.x ?? 50, y: center?.y ?? 50 }
+      }
+      const group = entry.collectionId || 'ungrouped'
+      const center = centers.find((item) => item.id === group) || { x: 50, y: 50 }
+      const siblings = entries.filter((item) => item.kind !== 'collection' && (item.collectionId || 'ungrouped') === group)
+      const index = siblings.findIndex((item) => item.id === entry.id)
+      const angle = (index / Math.max(siblings.length, 1)) * Math.PI * 2 - Math.PI / 2
+      const radius = siblings.length < 2 ? 0 : siblings.length === 2 ? 14 : 18
+      return { ...entry, x: Math.max(12, Math.min(88, center.x + Math.cos(angle) * radius)), y: Math.max(17, Math.min(83, center.y + Math.sin(angle) * radius)) }
+    })
   }, [sortedNotes, snippets, collections])
   const visibleKnowledgeNodes = useMemo(() => knowledgeNodes.filter((node) => {
     const matchesType = graphFilter === 'all' || (graphFilter === 'notes' && node.kind === 'note') || (graphFilter === 'snippets' && node.kind === 'snippet') || (graphFilter === 'collections' && node.kind === 'collection')
@@ -957,7 +967,6 @@ function App() {
                     return <line key={index} x1={from.x * 7} y1={from.y * 2.8} x2={to.x * 7} y2={to.y * 2.8} stroke="url(#graphLine)" strokeWidth="1.5" strokeOpacity=".75" />
                   })}
                 </svg>
-                <div className="graph-hub" aria-hidden="true"><span className="graph-hub-orbit" /><span className="graph-hub-icon"><Network size={22}/></span><strong>DevVault</strong><small>{notes.length + snippets.length} saved items</small></div>
                 {visibleKnowledgeNodes.map((node) => <button
                   key={node.kind + node.id}
                   className={`graph-node graph-data-node graph-data-${node.kind}`}
