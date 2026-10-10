@@ -1676,3 +1676,40 @@ body, .app-shell { background: var(--dv-bg); }
   .graph-data-node small { max-width: 73px; font-size: 7px; }
   .graph-node-tag { max-width: 70px; font-size: 7px; }
 }
+
+
+/* Knowledge map refinement: content-first clusters, quieter canvas, no decorative hub. */
+.knowledge-graph-canvas {
+  min-height: 360px;
+  background-color: #0b0d14;
+  background-image: radial-gradient(circle at 25% 50%, rgba(114, 88, 191, .07), transparent 32%), radial-gradient(circle at 75% 50%, rgba(63, 119, 174, .06), transparent 32%), radial-gradient(rgba(148, 153, 179, .16) .6px, transparent .6px);
+  background-size: auto, auto, 20px 20px;
+}
+.knowledge-graph-lines line { stroke-width: 1.1; stroke-opacity: .56; }
+.graph-data-node {
+  min-width: 94px;
+  max-width: 126px;
+  min-height: 78px;
+  border: 1px solid #303449;
+  border-radius: 10px;
+  box-shadow: 0 5px 16px rgba(0,0,0,.18);
+  background: #111420;
+  transition: border-color .15s ease, background .15s ease, transform .15s ease;
+}
+.graph-data-node:hover, .graph-data-node:focus-visible {
+  border-color: #8871c9;
+  background: #17192a;
+  transform: translateY(-2px);
+}
+.graph-data-node .graph-node-icon { width: 28px; height: 28px; border-radius: 8px; }
+.graph-data-node strong { color: #e6e5f0; font-size: 10px; font-weight: 600; }
+.graph-data-node small { color: #9297ad; font-size: 9px; }
+.graph-node-tag { border: 0; background: #211b34; color: #c5b4f4; }
+.graph-data-note .graph-node-icon { color: #c7b0ff; border-color: #4c3d6b; background: #211b31; }
+.graph-data-snippet .graph-node-icon { color: #9bc9f8; border-color: #294c68; background: #142638; }
+.graph-data-collection .graph-node-icon { color: #f0c18f; border-color: #60462f; background: #2b2118; }
+.graph-hub, .graph-hub-orbit, .graph-hub-icon { display: none !important; }
+@media (max-width: 760px) {
+  .knowledge-graph-canvas { min-height: 320px; }
+  .graph-data-node { min-width: 76px; max-width: 100px; min-height: 68px; }
+}
