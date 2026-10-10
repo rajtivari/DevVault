@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AlertCircle, Check, Code2, Copy, Download, FileText, FolderOpen, Home, Pencil, Play, Plus, Search, Save, Tag, Trash2, Upload, X } from 'lucide-react'
+import { AlertCircle, Check, Code2, Copy, Download, FileText, FolderOpen, Home, PanelLeftClose, PanelLeftOpen, Pencil, Play, Plus, Search, Save, Tag, Trash2, Upload, X } from 'lucide-react'
 import { createPreviewDocument, getRunnerMode, runJavaScriptInSandbox, type ConsoleEntry, type SandboxRun } from './codeRunner'
 import './App.css'
 
@@ -107,6 +107,8 @@ function App() {
   const [snippets, setSnippets] = useState<Snippet[]>(readSnippets)
   const [collections, setCollections] = useState<Collection[]>(readCollections)
   const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections'>('dashboard')
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const globalSearchInputRef = useRef<HTMLInputElement | null>(null)
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null)
   const [collectionSearch, setCollectionSearch] = useState('')
   const [collectionDraft, setCollectionDraft] = useState<CollectionDraft | null>(null)
@@ -195,6 +197,20 @@ function App() {
   const collectionSnippets = selectedCollectionId === null ? [] : snippets.filter((snippet) => belongsToCollection(snippet.collectionId))
 
   useEffect(() => () => sandboxRunRef.current?.cancel(), [])
+
+  useEffect(() => {
+    function handleWorkspaceShortcuts(event: KeyboardEvent) {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey) return
+      if (event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        setGlobalSearchOpen(true)
+        globalSearchInputRef.current?.focus()
+      }
+      if (event.key === 'Escape') setGlobalSearchOpen(false)
+    }
+    window.addEventListener('keydown', handleWorkspaceShortcuts)
+    return () => window.removeEventListener('keydown', handleWorkspaceShortcuts)
+  }, [])
 
   function exportBackup() {
     const backup = { app: 'DevVault', formatVersion: 1, exportedAt: new Date().toISOString(), notes, snippets, collections }
@@ -532,7 +548,7 @@ function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${sidebarCollapsed ? " sidebar-collapsed" : ""}`}>
       <aside className="sidebar" aria-label="Workspace navigation">
         <a className="brand" href="#notes" aria-label="DevVault home">
           <img className="brand-mark" src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" aria-hidden="true" />
@@ -648,11 +664,17 @@ function App() {
 
       <main className="main-content" id="notes">
         <header className="topbar">
-          <div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{activeSection === 'dashboard' ? 'Dashboard' : activeSection === 'notes' ? 'Notes' : activeSection === 'snippets' ? 'Code snippets' : 'Collections'}</strong></div>
+          <div className="topbar-leading">
+            <button className="icon-button sidebar-toggle" type="button" onClick={() => setSidebarCollapsed((collapsed) => !collapsed)} aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"} title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}>
+              {sidebarCollapsed ? <PanelLeftOpen size={16} aria-hidden="true" /> : <PanelLeftClose size={16} aria-hidden="true" />}
+            </button>
+            <div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{activeSection === 'dashboard' ? 'Dashboard' : activeSection === 'notes' ? 'Notes' : activeSection === 'snippets' ? 'Code snippets' : 'Collections'}</strong></div>
+          </div>
           <div className="global-search-wrap">
             <label className="global-search-box">
               <Search size={15} aria-hidden="true" />
               <input
+                ref={globalSearchInputRef}
                 type="search"
                 value={globalSearch}
                 onFocus={() => setGlobalSearchOpen(true)}
