@@ -1,75 +1,71 @@
-# React + TypeScript + Vite
+# DevVault — Developer Knowledge Workspace
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+DevVault is a focused workspace for keeping notes, code snippets, and developer resources together. It is designed to make everyday learning and project work easier to organize, search, reuse, and back up.
 
-Currently, two official plugins are available:
+**Live app:** https://devvault.rajtivari.qd.je/  
+**Repository:** https://github.com/rajtivari/DevVault
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## What it does
 
-## React Compiler
+### Notes
+- Create, edit, search, and delete notes.
+- Add tags and organize notes into collections.
+- Mark useful items as favorites or archive items you want to keep out of the main workspace.
+- Find notes by title, content, and tags.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Code snippets
+- Save snippets with a title, language, code, tags, and optional collection.
+- Edit, search, copy, and organize snippets.
+- Filter snippets by programming language and tags.
+- Run supported JavaScript and Python snippets in the browser-based runner, with output and console feedback.
 
-## Expanding the ESLint configuration
+### Collections and knowledge graph
+- Create named collections with descriptions and group related notes and snippets.
+- Browse a lightweight visual knowledge graph based on the notes, snippets, tags, and collections stored in the workspace. It is a local visualization, not an AI-generated semantic graph.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Developer utilities
+DevVault includes utility workflows for JSON formatting/validation, Base64 encode/decode, URL encode/decode, regular-expression testing, and text diffing.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Backup and privacy
+- Export notes, snippets, and collections to a JSON backup file.
+- Restore supported DevVault JSON backups.
+- Data is stored in the current browser using local storage. Clearing browser data or switching browsers/devices can remove or separate your workspace, so export backups regularly.
+- The current version does not have account login, cloud synchronization, a hosted database, or production AI/semantic search.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Technology
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- React 19
+- TypeScript
+- Vite
+- Lucide React icons
+- Browser local storage
+- Browser-based code execution/preview helpers for supported languages
 
+## Run locally
+
+Requirements: Node.js and npm.
+
+```bash
+git clone https://github.com/rajtivari/DevVault.git
+cd DevVault
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Build and check the project:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm run build
+npm run lint
 ```
+
+## Project status
+
+DevVault is a deployed, actively developed personal developer tool. Features described above reflect the current frontend implementation; cloud sync, accounts, hosted database integration, and AI-powered semantic search are future possibilities, not current capabilities.
+
+## Author
+
+**Raj Tivari**  
+GitHub: https://github.com/rajtivari  
+Portfolio: https://rajtivari.github.io/  
+LinkedIn: https://www.linkedin.com/in/rajtivari/
