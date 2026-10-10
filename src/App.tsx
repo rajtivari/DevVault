@@ -1075,7 +1075,7 @@ function App() {
                           <button className={`icon-button favorite-toggle${activeSnippet?.favorite ? ' is-favorite' : ''}`} type="button" onClick={() => toggleSnippetFavorite(activeSnippetId)} aria-label={activeSnippet?.favorite ? 'Remove snippet from favorites' : 'Add snippet to favorites'} title="Toggle favorite"><Star size={16} fill={activeSnippet?.favorite ? 'currentColor' : 'none'} aria-hidden="true" /></button>
                           <button className="icon-button delete-button" type="button" onClick={deleteSnippet} aria-label="Delete snippet" title="Delete snippet"><Trash2 size={16} aria-hidden="true" /></button>
                         </>
-                      )}}
+                      )}
                     </div>
                   </div>
                   <div className="editor-fields snippet-fields">
