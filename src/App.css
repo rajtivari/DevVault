@@ -1392,3 +1392,52 @@ input, select, textarea, .tool-textarea, .tool-single-input {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
+
+
+/* Final responsive polish for narrow phones and compact browser windows. */
+@media (max-width: 760px) {
+  .app-shell { display: block !important; grid-template-columns: minmax(0, 1fr) !important; }
+  .sidebar {
+    position: relative !important;
+    top: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-width: 0;
+    padding: 12px 14px 10px !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid #29282f !important;
+    box-shadow: none !important;
+  }
+  .brand { margin: 0 0 10px !important; }
+  .sidebar > .sidebar-section:first-of-type {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 5px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .sidebar > .sidebar-section:first-of-type .nav-item {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: max-content;
+    min-height: 36px;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+  .main-content { width: 100%; max-width: none; padding: 0 14px 28px !important; }
+  .workspace { grid-template-columns: minmax(0, 1fr) !important; }
+  .dashboard-grid, .dashboard-panels, .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .page-heading { gap: 12px; }
+  .topbar { min-width: 0; }
+  .breadcrumb { min-width: 0; }
+  .search-box { min-width: 0; }
+}
+@media (max-width: 420px) {
+  .dashboard-grid, .dashboard-panels, .stats-grid { grid-template-columns: minmax(0, 1fr); }
+  .main-content { padding-inline: 11px !important; }
+  .page-heading h1 { font-size: 23px; }
+  .page-heading .primary-button { flex-shrink: 0; }
+  .editor-fields { padding-inline: 13px !important; }
+  .settings-card { flex-wrap: wrap; }
+  .settings-actions button { max-width: 100%; }
+}
