@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AlertCircle, Check, Code2, Copy, FileText, FolderOpen, Pencil, Play, Plus, Search, Save, Tag, Trash2, X } from 'lucide-react'
+import { AlertCircle, Check, Code2, Copy, FileText, FolderOpen, Home, Pencil, Play, Plus, Search, Save, Tag, Trash2, X } from 'lucide-react'
 import { createPreviewDocument, getRunnerMode, runJavaScriptInSandbox, type ConsoleEntry, type SandboxRun } from './codeRunner'
 import './App.css'
 
@@ -106,7 +106,7 @@ function App() {
   const [notes, setNotes] = useState<Note[]>(readNotes)
   const [snippets, setSnippets] = useState<Snippet[]>(readSnippets)
   const [collections, setCollections] = useState<Collection[]>(readCollections)
-  const [activeSection, setActiveSection] = useState<'notes' | 'snippets' | 'collections'>('notes')
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections'>('dashboard')
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null)
   const [collectionSearch, setCollectionSearch] = useState('')
   const [collectionDraft, setCollectionDraft] = useState<CollectionDraft | null>(null)
@@ -480,6 +480,9 @@ function App() {
 
         <div className="sidebar-section">
           <p className="sidebar-label">Workspace</p>
+          <button className={`nav-item${activeSection === 'dashboard' ? ' is-active' : ''}`} type="button" onClick={() => setActiveSection('dashboard')} aria-current={activeSection === 'dashboard' ? 'page' : undefined}>
+            <Home size={16} aria-hidden="true" /><span>Dashboard</span>
+          </button>
           <button
             className={`nav-item${activeSection === 'notes' && activeTag === null ? ' is-active' : ''}`}
             type="button"
@@ -584,7 +587,7 @@ function App() {
 
       <main className="main-content" id="notes">
         <header className="topbar">
-          <div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{activeSection === 'notes' ? 'Notes' : activeSection === 'snippets' ? 'Code snippets' : 'Collections'}</strong></div>
+          <div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{activeSection === 'dashboard' ? 'Dashboard' : activeSection === 'notes' ? 'Notes' : activeSection === 'snippets' ? 'Code snippets' : 'Collections'}</strong></div>
         </header>
 
         <section className="page-heading" aria-labelledby="page-title">
@@ -663,7 +666,33 @@ function App() {
           )}
         </label>
 
-        {activeSection === 'notes' ? (
+        {activeSection === 'dashboard' ? (
+          <section className="dashboard-workspace" aria-label="DevVault dashboard">
+            <div className="dashboard-welcome">
+              <div><p className="eyebrow">YOUR DEVELOPER WORKSPACE</p><h2>Keep what you learn.</h2><p>Save useful ideas, code patterns, and notes — and find them when you need them.</p></div>
+              <div className="dashboard-quick-actions">
+                <button className="primary-button" type="button" onClick={createNote}><Plus size={15} aria-hidden="true" />New note</button>
+                <button className="secondary-button" type="button" onClick={createSnippet}><Code2 size={15} aria-hidden="true" />New snippet</button>
+              </div>
+            </div>
+            <div className="dashboard-stat-grid">
+              <button className="dashboard-stat" type="button" onClick={() => setActiveSection('notes')}><span className="dashboard-stat-icon"><FileText size={17} aria-hidden="true" /></span><span className="dashboard-stat-label">Notes</span><strong>{notes.length}</strong><span className="dashboard-stat-foot">Open your notebook <span aria-hidden="true">↗</span></span></button>
+              <button className="dashboard-stat" type="button" onClick={() => setActiveSection('snippets')}><span className="dashboard-stat-icon"><Code2 size={17} aria-hidden="true" /></span><span className="dashboard-stat-label">Code snippets</span><strong>{snippets.length}</strong><span className="dashboard-stat-foot">Browse saved code <span aria-hidden="true">↗</span></span></button>
+              <button className="dashboard-stat" type="button" onClick={() => setActiveSection('collections')}><span className="dashboard-stat-icon"><FolderOpen size={17} aria-hidden="true" /></span><span className="dashboard-stat-label">Collections</span><strong>{collections.length}</strong><span className="dashboard-stat-foot">Organize your work <span aria-hidden="true">↗</span></span></button>
+            </div>
+            <div className="dashboard-recent-grid">
+              <section className="dashboard-section">
+                <div className="dashboard-section-heading"><div><h3>Recently updated notes</h3><p>Your latest saved knowledge</p></div><button className="text-button" type="button" onClick={() => setActiveSection('notes')}>All notes →</button></div>
+                {sortedNotes.length ? <div className="dashboard-recent-list">{sortedNotes.slice(0, 4).map((note) => <button className="dashboard-recent-item" type="button" key={note.id} onClick={() => { setActiveNoteId(note.id); setActiveSection('notes') }}><FileText size={15} aria-hidden="true" /><span><strong>{note.title.trim() || 'Untitled note'}</strong><small>{note.content.trim().slice(0, 90) || 'No content yet'}</small></span><time>{new Date(note.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</time></button>)}</div> : <div className="dashboard-empty"><FileText size={18} aria-hidden="true" /><p>No notes yet. Create one to capture something useful.</p></div>}
+              </section>
+              <section className="dashboard-section">
+                <div className="dashboard-section-heading"><div><h3>Recently saved snippets</h3><p>Reusable code at a glance</p></div><button className="text-button" type="button" onClick={() => setActiveSection('snippets')}>All snippets →</button></div>
+                {sortedSnippets.length ? <div className="dashboard-recent-list">{sortedSnippets.slice(0, 4).map((snippet) => <button className="dashboard-recent-item" type="button" key={snippet.id} onClick={() => { setActiveSnippetId(snippet.id); setSnippetDraft({ title: snippet.title, language: snippet.language, code: snippet.code, tagsText: snippet.tags.join(', '), collectionId: snippet.collectionId }); setSnippetDirty(false); setActiveSection('snippets') }}><Code2 size={15} aria-hidden="true" /><span><strong>{snippet.title}</strong><small>{snippet.language} · {snippet.code.trim().split('\n')[0].slice(0, 80)}</small></span><time>{new Date(snippet.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</time></button>)}</div> : <div className="dashboard-empty"><Code2 size={18} aria-hidden="true" /><p>No snippets yet. Save a useful pattern or command.</p></div>}
+              </section>
+            </div>
+            <p className="dashboard-local-note"><span className="status-dot" aria-hidden="true" />Everything stays in this browser. Backup tools will be added in the data-management stage.</p>
+          </section>
+        ) : activeSection === 'notes' ? (
         <section className="workspace" aria-label="Notes workspace">
           <div className="notes-panel">
             <div className="panel-heading">
