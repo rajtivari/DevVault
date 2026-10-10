@@ -11,6 +11,7 @@ type Note = {
   collectionId?: string
   updatedAt: string
   favorite?: boolean
+  archived?: boolean
 }
 
 type Snippet = {
@@ -108,7 +109,7 @@ function App() {
   const [notes, setNotes] = useState<Note[]>(readNotes)
   const [snippets, setSnippets] = useState<Snippet[]>(readSnippets)
   const [collections, setCollections] = useState<Collection[]>(readCollections)
-  const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections' | 'favorites' | 'tools'>('dashboard')
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections' | 'favorites' | 'tools' | 'archive'>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const globalSearchInputRef = useRef<HTMLInputElement | null>(null)
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null)
@@ -336,6 +337,28 @@ function App() {
       else if (toolName === 'base64') setToolOutput(btoa(toolInput))
       else setToolOutput(encodeURIComponent(toolInput))
     } catch { setToolError(toolName === 'json' ? 'Invalid JSON. Check commas, quotes, and brackets.' : 'Could not process this input.'); setToolOutput('') }
+  }
+
+  function archiveNote(noteId: string) {
+    commitNotes(notes.map((note) => note.id === noteId ? { ...note, archived: true } : note))
+    setActiveNoteId(null)
+    setFeedback('Note moved to archive.')
+  }
+
+  function restoreNote(noteId: string) {
+    commitNotes(notes.map((note) => note.id === noteId ? { ...note, archived: false } : note))
+    setFeedback('Note restored.')
+  }
+
+  function archiveSnippet(snippetId: string) {
+    commitSnippets(snippets.map((snippet) => snippet.id === snippetId ? { ...snippet, archived: true } : snippet))
+    setActiveSnippetId(null); setSnippetDraft(null); setSnippetDirty(false)
+    setFeedback('Snippet moved to archive.')
+  }
+
+  function restoreSnippet(snippetId: string) {
+    commitSnippets(snippets.map((snippet) => snippet.id === snippetId ? { ...snippet, archived: false } : snippet))
+    setFeedback('Snippet restored.')
   }
 
   function toggleNoteFavorite(noteId: string) {
@@ -615,6 +638,7 @@ function App() {
             <span>Collections</span>
             <span className="nav-count">{collections.length}</span>
           </button>
+          <button className={`nav-item${activeSection === 'archive' ? ' is-active' : ''}`} type="button" onClick={() => setActiveSection('archive')} aria-current={activeSection === 'archive' ? 'page' : undefined}><FolderOpen size={16} aria-hidden="true" /><span>Archive</span><span className="nav-count">{notes.filter((note) => note.archived).length + snippets.filter((snippet) => snippet.archived).length}</span></button>
           <button className={`nav-item${activeSection === 'tools' ? ' is-active' : ''}`} type="button" onClick={() => setActiveSection('tools')}><Wrench size={16} aria-hidden="true" /><span>Developer tools</span></button>
         </div>
 
@@ -694,7 +718,7 @@ function App() {
             <button className="icon-button sidebar-toggle" type="button" onClick={() => setSidebarCollapsed((collapsed) => !collapsed)} aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"} title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}>
               {sidebarCollapsed ? <PanelLeftOpen size={16} aria-hidden="true" /> : <PanelLeftClose size={16} aria-hidden="true" />}
             </button>
-            <div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{activeSection === 'dashboard' ? 'Dashboard' : activeSection === 'notes' ? 'Notes' : activeSection === 'snippets' ? 'Code snippets' : activeSection === 'favorites' ? 'Favorites' : 'Collections'}</strong></div>
+            <div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{activeSection === 'dashboard' ? 'Dashboard' : activeSection === 'notes' ? 'Notes' : activeSection === 'snippets' ? 'Code snippets' : activeSection === 'favorites' ? 'Favorites' : activeSection === 'archive' ? 'Archive' : 'Collections'}</strong></div>
           </div>
           <div className="global-search-wrap">
             <label className="global-search-box">
@@ -870,6 +894,12 @@ function App() {
             </div>
             <p className="dashboard-local-note"><span className="status-dot" aria-hidden="true" />Local storage is device-specific. Backups let you move your data safely.</p>
           </section>
+        ) : activeSection === 'archive' ? (
+          <section className="archive-workspace" aria-label="Archived items"><div className="archive-intro"><h2>Archive</h2><p>Keep old items without permanently deleting them.</p></div><div className="archive-list">
+          {notes.filter((note) => note.archived).map((note) => <article className="archive-row" key={`archive-note-${note.id}`}><FileText size={17} /><div className="archive-item-info"><strong>{note.title.trim() || 'Untitled note'}</strong><span>Note · {note.content.trim().slice(0,100) || 'No content'}</span></div><button className="secondary-button" type="button" onClick={() => restoreNote(note.id)}>Restore</button><button className="icon-button delete-button" type="button" aria-label="Permanently delete note" onClick={() => { commitNotes(notes.filter((item) => item.id !== note.id)); setFeedback('Archived note permanently deleted.') }}><Trash2 size={15}/></button></article>)}
+          {snippets.filter((snippet) => snippet.archived).map((snippet) => <article className="archive-row" key={`archive-snippet-${snippet.id}`}><Code2 size={17} /><div className="archive-item-info"><strong>{snippet.title || 'Untitled snippet'}</strong><span>Snippet · {snippet.language}</span></div><button className="secondary-button" type="button" onClick={() => restoreSnippet(snippet.id)}>Restore</button><button className="icon-button delete-button" type="button" aria-label="Permanently delete snippet" onClick={() => { commitSnippets(snippets.filter((item) => item.id !== snippet.id)); setFeedback('Archived snippet permanently deleted.') }}><Trash2 size={15}/></button></article>)}
+          {notes.every((note) => !note.archived) && snippets.every((snippet) => !snippet.archived) && <div className="dashboard-empty"><FolderOpen size={20}/><h3>Archive is empty</h3><p>Archived items will appear here.</p></div>}
+          </div></section>
         ) : activeSection === 'tools' ? (
           <section className="tools-workspace" aria-label="Developer utilities"><div className="tools-intro"><p className="eyebrow">UTILITY DESK</p><h2>Get the small jobs done.</h2><p>Format JSON and encode text without leaving your workspace. Runs in your browser.</p></div><div className="tool-tabs" role="tablist" aria-label="Choose a developer tool"><button type="button" role="tab" aria-selected={toolName === 'json'} className={toolName === 'json' ? 'is-active' : ''} onClick={() => { setToolName('json'); setToolOutput(''); setToolError('') }}>JSON formatter</button><button type="button" role="tab" aria-selected={toolName === 'base64'} className={toolName === 'base64' ? 'is-active' : ''} onClick={() => { setToolName('base64'); setToolOutput(''); setToolError('') }}>Base64 encoder</button><button type="button" role="tab" aria-selected={toolName === 'url'} className={toolName === 'url' ? 'is-active' : ''} onClick={() => { setToolName('url'); setToolOutput(''); setToolError('') }}>URL encoder</button></div><div className="tool-workbench"><label htmlFor="tool-input">{toolName === 'json' ? 'JSON input' : 'Text input'}</label><textarea id="tool-input" className="tool-textarea" value={toolInput} onChange={(event) => { setToolInput(event.target.value); setToolError('') }} placeholder={toolName === 'json' ? '{\n  "name": "DevVault",\n  "localFirst": true\n}' : 'Enter text to encode…'} spellCheck={false} /><div className="tool-actions"><button className="primary-button" type="button" onClick={runUtilityTool}><Play size={14} />{toolName === 'json' ? 'Format JSON' : 'Encode text'}</button><button className="secondary-button" type="button" onClick={() => { setToolInput(''); setToolOutput(''); setToolError('') }}>Clear</button></div>{toolError && <p className="tool-error" role="alert">{toolError}</p>}{toolOutput && <div className="tool-output"><div className="tool-output-heading"><strong>Output</strong><button className="text-button" type="button" onClick={() => { void navigator.clipboard.writeText(toolOutput).then(() => setFeedback('Output copied.')).catch(() => setToolError('Clipboard access was blocked by your browser.')) }}><Copy size={13} />Copy output</button></div><pre>{toolOutput}</pre></div>}</div></section>
         ) : activeSection === 'favorites' ? (
@@ -930,6 +960,7 @@ function App() {
               <>
                 <div className="editor-toolbar">
                   <span className="editor-state"><span className="status-dot" aria-hidden="true" />{storageError ? 'Not saved' : 'Saved on this device'}</span>
+                  <button className="icon-button" type="button" onClick={() => archiveNote(activeNote.id)} aria-label="Archive note" title="Archive note"><FolderOpen size={16} aria-hidden="true" /></button>
                   <button className={`icon-button favorite-toggle${activeNote.favorite ? " is-favorite" : ""}`} type="button" onClick={() => toggleNoteFavorite(activeNote.id)} aria-label={activeNote.favorite ? "Remove note from favorites" : "Add note to favorites"} title="Toggle favorite"><Star size={16} fill={activeNote.favorite ? "currentColor" : "none"} aria-hidden="true" /></button>
                   <button className="icon-button delete-button" type="button" onClick={deleteNote} aria-label="Delete note" title="Delete note">
                     <Trash2 size={16} aria-hidden="true" />
@@ -1072,6 +1103,7 @@ function App() {
                       </button>
                       {activeSnippetId && (
                         <>
+                          <button className="icon-button" type="button" onClick={() => archiveSnippet(activeSnippetId)} aria-label="Archive snippet" title="Archive snippet"><FolderOpen size={16} aria-hidden="true" /></button>
                           <button className={`icon-button favorite-toggle${activeSnippet?.favorite ? ' is-favorite' : ''}`} type="button" onClick={() => toggleSnippetFavorite(activeSnippetId)} aria-label={activeSnippet?.favorite ? 'Remove snippet from favorites' : 'Add snippet to favorites'} title="Toggle favorite"><Star size={16} fill={activeSnippet?.favorite ? 'currentColor' : 'none'} aria-hidden="true" /></button>
                           <button className="icon-button delete-button" type="button" onClick={deleteSnippet} aria-label="Delete snippet" title="Delete snippet"><Trash2 size={16} aria-hidden="true" /></button>
                         </>
