@@ -1149,3 +1149,23 @@
   .dashboard-recent-grid { grid-template-columns: 1fr; gap: 10px; }
   .dashboard-section { padding: 13px 10px 8px; }
 }
+
+.global-search-wrap{position:relative;width:min(360px,48%);margin-left:auto}
+.global-search-box{display:flex;align-items:center;gap:9px;width:100%;height:36px;padding:0 10px;color:#9696a2;border:1px solid #303038;border-radius:7px;background:#151519}
+.global-search-box:focus-within{border-color:#8f78c5;box-shadow:0 0 0 2px rgba(169,138,255,.1)}
+.global-search-box input{width:100%;min-width:0;color:#e4e4e9;border:0;outline:0;background:transparent;font-size:12px}
+.global-search-box input::placeholder{color:#777782}
+.global-search-box kbd{padding:2px 5px;color:#888892;border:1px solid #36363e;border-radius:4px;font-size:9px}
+.global-search-results{position:absolute;top:calc(100% + 7px);right:0;z-index:20;width:min(440px,calc(100vw - 28px));max-height:min(460px,70vh);overflow-y:auto;padding:7px;border:1px solid #34343d;border-radius:9px;background:#17171b;box-shadow:0 18px 45px rgba(0,0,0,.42)}
+.global-search-hint{margin:0;padding:16px 12px;color:#9999a4;font-size:12px;line-height:1.6}
+.global-search-result{display:flex;align-items:center;gap:10px;width:100%;padding:10px;color:#aaaab4;border:0;border-radius:6px;background:transparent;text-align:left;cursor:pointer}
+.global-search-result:hover{color:#f0ecff;background:#25212f}
+.global-search-result>svg{flex:0 0 auto;color:#b39af2}
+.global-search-result>span{display:grid;min-width:0;gap:3px}
+.global-search-result strong,.global-search-result small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.global-search-result strong{color:#e5e5eb;font-size:12px;font-weight:550}
+.global-search-result small{color:#92929d;font-size:10px}
+.global-search-close{width:100%;margin-top:5px;padding:8px;color:#9999a4;border:0;border-top:1px solid #2b2b32;background:transparent;font-size:11px;cursor:pointer}
+.global-search-close:hover{color:#e5e5eb}
+@media(max-width:760px){.global-search-wrap{width:min(250px,55%)}.global-search-box{height:34px}.global-search-box kbd{display:none}}
+@media(max-width:480px){.topbar{align-items:center;gap:8px}.global-search-wrap{width:48%}.global-search-box{gap:5px;padding-inline:7px}.global-search-box input{font-size:11px}}
