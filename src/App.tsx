@@ -23,6 +23,7 @@ type Snippet = {
   collectionId?: string
   updatedAt: string
   favorite?: boolean
+  archived?: boolean
 }
 
 type Collection = {
