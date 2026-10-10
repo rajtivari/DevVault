@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AlertCircle, Check, Code2, Copy, Download, FileText, FolderOpen, Home, PanelLeftClose, PanelLeftOpen, Pencil, Star, Play, Plus, Search, Save, Tag, Trash2, Upload, Wrench, X } from 'lucide-react'
+import { AlertCircle, Check, Code2, Copy, Download, FileText, FolderOpen, Home, PanelLeftClose, PanelLeftOpen, Pencil, Star, Play, Plus, Search, Save, Tag, Trash2, Upload, Wrench, X, Network, ArrowRight } from 'lucide-react'
 import { createPreviewDocument, getRunnerMode, runJavaScriptInSandbox, runPythonInBrowser, type ConsoleEntry, type SandboxRun } from './codeRunner'
 import './App.css'
 
