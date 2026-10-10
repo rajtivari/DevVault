@@ -1317,3 +1317,78 @@
 .diff-output{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.tool-output .diff-output{border-left:2px solid #55446f}
 
 .tool-mode-toggle{display:flex;gap:6px}.tool-mode-toggle button{padding:7px 12px;border:1px solid #303039;border-radius:6px;background:#101013;color:#9b9aa6;font-size:11px;cursor:pointer}.tool-mode-toggle button.is-active{border-color:#49385f;background:#241e2d;color:#d7c8f5}
+
+
+/* Premium minimal polish: consistent surfaces, calmer contrast, and crisp controls. */
+:root {
+  color-scheme: dark;
+  --surface-base: #0d0d10;
+  --surface-raised: #151519;
+  --surface-inset: #101013;
+  --line: #2b2b33;
+  --text-strong: #f0eff5;
+  --accent-bright: #c4adff;
+}
+body {
+  background: var(--surface-base);
+  color: #d8d7e0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.app-shell::before { opacity: 0.45; }
+.sidebar {
+  background: #111114;
+  border-right-color: #26262d;
+  box-shadow: 8px 0 28px rgba(0, 0, 0, 0.12);
+  backdrop-filter: none;
+}
+.nav-item { border-radius: 8px; transition: color 140ms ease, background 140ms ease, border-color 140ms ease; }
+.nav-item:hover { background: #1b1b21; border-color: #30303a; }
+.nav-item.is-active {
+  background: #211c2b;
+  border-color: #403451;
+  box-shadow: inset 2px 0 #b89aff;
+}
+.nav-item.is-active::before { display: none; }
+.topbar { border-bottom-color: #28282f; }
+.search-box, .search-input, input, select, textarea {
+  accent-color: #b79aff;
+}
+.search-box { border-color: #303039; border-radius: 8px; background: #121215; }
+.search-box:focus-within { border-color: #8066ad; box-shadow: 0 0 0 2px rgba(183, 154, 255, 0.09); }
+button, .primary-button, .secondary-button, .icon-button { transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid #b79aff;
+  outline-offset: 2px;
+}
+.primary-button, .run-code-button {
+  border-radius: 7px;
+  box-shadow: none;
+  font-weight: 600;
+}
+.secondary-button, .icon-button { border-radius: 7px; }
+.panel, .workspace-card, .note-card, .snippet-card, .tool-workbench, .settings-card, .favorite-card, .archive-row {
+  box-shadow: none;
+}
+input, select, textarea, .tool-textarea, .tool-single-input {
+  border-radius: 7px;
+}
+.code-editor-shell { border-radius: 9px; border-color: #383441; }
+.code-line-gutter { background: #121216; border-right-color: #2a2931; }
+.snippet-code-input { background: #0f0f12; }
+.snippet-output { border-radius: 9px; background: #121216; }
+.tool-workbench, .settings-card, .favorite-card, .archive-row {
+  background: #151519;
+  border-color: #2d2d35;
+  border-radius: 9px;
+}
+.tool-tabs button { border-radius: 7px; }
+.tool-tabs button.is-active { background: #211c2b; border-color: #403451; }
+@media (max-width: 760px) {
+  .main-content { padding-left: 16px; padding-right: 16px; }
+  .topbar { min-height: 58px; }
+  .search-box { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
