@@ -162,6 +162,30 @@ function App() {
     () => [...new Set(notes.flatMap((note) => note.tags))].sort((first, second) => first.localeCompare(second)),
     [notes],
   )
+  const knowledgeNodes = useMemo(() => {
+    const positions = [
+      { x: 18, y: 25 }, { x: 37, y: 15 }, { x: 66, y: 17 }, { x: 83, y: 40 },
+      { x: 78, y: 76 }, { x: 52, y: 85 }, { x: 24, y: 75 }, { x: 12, y: 49 },
+    ]
+    const entries = [
+      ...sortedNotes.map((item) => ({ id: item.id, label: item.title.trim() || 'Untitled note', kind: 'note' as const, detail: item.tags.length ? item.tags.slice(0, 2).join(' · ') : 'Note', tags: item.tags, collectionId: item.collectionId })),
+      ...snippets.map((item) => ({ id: item.id, label: item.title.trim() || 'Untitled snippet', kind: 'snippet' as const, detail: item.language, tags: item.tags, collectionId: item.collectionId })),
+      ...collections.map((item) => ({ id: item.id, label: item.name, kind: 'collection' as const, detail: 'Collection', tags: [] as string[], collectionId: item.id })),
+    ].slice(0, 8)
+    return entries.map((entry, index) => ({ ...entry, ...positions[index] }))
+  }, [sortedNotes, snippets, collections])
+  const knowledgeEdges = useMemo(() => {
+    const edges: Array<{ from: number; to: number; related: boolean }> = []
+    knowledgeNodes.forEach((node, index) => {
+      edges.push({ from: -1, to: index, related: false })
+      knowledgeNodes.slice(index + 1).forEach((other, offset) => {
+        const sharedTag = node.tags.some((tag) => other.tags.includes(tag))
+        const sharedCollection = Boolean(node.collectionId && node.collectionId === other.collectionId)
+        if (sharedTag || sharedCollection) edges.push({ from: index, to: index + 1 + offset, related: true })
+      })
+    })
+    return edges
+  }, [knowledgeNodes])
   const allSnippetTags = useMemo(
     () => [...new Set(snippets.flatMap((snippet) => snippet.tags))].sort((first, second) => first.localeCompare(second)),
     [snippets],
@@ -909,25 +933,38 @@ function App() {
               <button className="dashboard-stat" type="button" onClick={() => setActiveSection('snippets')}><span className="dashboard-stat-icon"><Code2 size={17} aria-hidden="true" /></span><span className="dashboard-stat-label">Code snippets</span><strong>{snippets.length}</strong><span className="dashboard-stat-foot">Browse saved code <span aria-hidden="true">↗</span></span></button>
               <button className="dashboard-stat" type="button" onClick={() => setActiveSection('collections')}><span className="dashboard-stat-icon"><FolderOpen size={17} aria-hidden="true" /></span><span className="dashboard-stat-label">Collections</span><strong>{collections.length}</strong><span className="dashboard-stat-foot">Organize your work <span aria-hidden="true">↗</span></span></button>
             </div>
-            <section className="knowledge-graph-card" aria-label="Knowledge graph preview">
+            <section className="knowledge-graph-card" aria-label="Knowledge graph">
               <div className="knowledge-graph-heading">
-                <div className="knowledge-graph-title"><span className="knowledge-graph-mark"><Network size={20} aria-hidden="true" /></span><div><h3>Knowledge Graph</h3><p>Explore how your workspace fits together.</p></div></div>
-                <div className="knowledge-graph-filters"><span className="graph-filter is-active">Overview</span><span className="graph-filter">Notes</span><span className="graph-filter">Code</span><span className="graph-filter">Collections</span></div>
+                <div className="knowledge-graph-title"><span className="knowledge-graph-mark"><Network size={20} aria-hidden="true" /></span><div><h3>Knowledge Graph</h3><p>Connections from your actual notes, code, tags and collections.</p></div></div>
+                <div className="knowledge-graph-filters"><span className="graph-filter is-active">All items</span><span className="graph-filter">Shared tags</span><span className="graph-filter">Collections</span></div>
               </div>
               <div className="knowledge-graph-canvas">
                 <svg className="knowledge-graph-lines" viewBox="0 0 700 280" preserveAspectRatio="none" aria-hidden="true">
                   <defs><linearGradient id="graphLine" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#7860ff" stopOpacity=".12"/><stop offset="50%" stopColor="#9d7aff" stopOpacity=".8"/><stop offset="100%" stopColor="#36c8ff" stopOpacity=".16"/></linearGradient></defs>
-                  <path d="M350 142 L190 74 L92 132 M350 142 L280 42 L445 54 L540 116 M350 142 L205 214 L92 132 M350 142 L480 218 L590 178 M350 142 L445 54 M190 74 L280 42 M205 214 L330 245 L480 218 M540 116 L590 178" stroke="url(#graphLine)" strokeWidth="1.3" fill="none"/>
-                  <path d="M92 132 L205 214 L190 74 M445 54 L540 116 L480 218" stroke="#8c74ff" strokeOpacity=".28" strokeDasharray="3 6" fill="none"/>
+                  {knowledgeEdges.map((edge, index) => {
+                    const from = edge.from === -1 ? { x: 50, y: 50 } : knowledgeNodes[edge.from]
+                    const to = knowledgeNodes[edge.to]
+                    return <line key={index} x1={from.x * 7} y1={from.y * 2.8} x2={to.x * 7} y2={to.y * 2.8} stroke={edge.related ? '#9e80ff' : 'url(#graphLine)'} strokeWidth={edge.related ? 1.8 : 1.1} strokeOpacity={edge.related ? .72 : .48} strokeDasharray={edge.related ? undefined : '3 5'} />
+                  })}
                 </svg>
                 <button className="graph-node graph-node-main" type="button" onClick={() => setActiveSection('dashboard')}><span className="graph-node-icon"><Network size={19}/></span><strong>DevVault</strong><small>{notes.length + snippets.length} saved items</small></button>
-                <button className="graph-node graph-node-notes" type="button" onClick={() => setActiveSection('notes')}><span className="graph-node-icon"><FileText size={16}/></span><strong>Notes</strong><small>{notes.length} items</small></button>
-                <button className="graph-node graph-node-snippets" type="button" onClick={() => setActiveSection('snippets')}><span className="graph-node-icon"><Code2 size={16}/></span><strong>Code</strong><small>{snippets.length} snippets</small></button>
-                <button className="graph-node graph-node-collections" type="button" onClick={() => setActiveSection('collections')}><span className="graph-node-icon"><FolderOpen size={16}/></span><strong>Collections</strong><small>{collections.length} groups</small></button>
-                <button className="graph-node graph-node-tools" type="button" onClick={() => setActiveSection('tools')}><span className="graph-node-icon"><Wrench size={15}/></span><strong>Dev tools</strong><small>Utilities</small></button>
-                <button className="graph-node graph-node-search" type="button" onClick={() => document.querySelector<HTMLInputElement>('.global-search-input')?.focus()}><span className="graph-node-icon"><Search size={15}/></span><strong>Search</strong><small>Find anything</small></button>
+                {knowledgeNodes.map((node) => <button
+                  key={node.kind + node.id}
+                  className={`graph-node graph-data-node graph-data-${node.kind}`}
+                  style={{ left: `${node.x}%`, top: `${node.y}%` }}
+                  type="button"
+                  title={node.tags.length ? `Tags: ${node.tags.join(', ')}` : node.detail}
+                  onClick={() => {
+                    if (node.kind === 'note') { setActiveNoteId(node.id); setActiveSection('notes') }
+                    else if (node.kind === 'snippet') {
+                      const snippet = snippets.find((item) => item.id === node.id)
+                      if (snippet) { setActiveSnippetId(snippet.id); setSnippetDraft({ title: snippet.title, language: snippet.language, code: snippet.code, tagsText: snippet.tags.join(', '), collectionId: snippet.collectionId }); setSnippetDirty(false); setActiveSection('snippets') }
+                    } else setActiveSection('collections')
+                  }}
+                ><span className="graph-node-icon">{node.kind === 'note' ? <FileText size={15}/> : node.kind === 'snippet' ? <Code2 size={15}/> : <FolderOpen size={15}/>}</span><strong>{node.label.length > 18 ? node.label.slice(0, 17) + '…' : node.label}</strong><small>{node.detail}</small></button>)}
+                {knowledgeNodes.length === 0 && <div className="graph-empty-state"><Network size={24}/><strong>Your graph starts here</strong><span>Create notes, snippets, or collections to map your knowledge.</span></div>}
               </div>
-              <div className="knowledge-graph-footer"><span><span className="graph-live-dot" />Workspace overview</span><button className="text-button" type="button" onClick={() => setActiveSection('collections')}>Explore workspace <ArrowRight size={13} aria-hidden="true" /></button></div>
+              <div className="knowledge-graph-footer"><span><span className="graph-live-dot" />{knowledgeNodes.length} items mapped · lines show shared tags or collections</span><button className="text-button" type="button" onClick={() => setActiveSection('notes')}>Explore notes <ArrowRight size={13} aria-hidden="true" /></button></div>
             </section>
             <div className="dashboard-recent-grid">
               <section className="dashboard-section">
