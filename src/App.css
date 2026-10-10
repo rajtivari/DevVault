@@ -1627,3 +1627,52 @@ body, .app-shell { background: var(--dv-bg); }
   .graph-data-node strong { max-width: 80px; font-size: 9px; }
   .graph-data-node small { max-width: 78px; overflow: hidden; text-overflow: ellipsis; }
 }
+
+
+/* Knowledge Graph v2 — less decorative clutter, stronger node hierarchy, usable controls. */
+.knowledge-graph-card { border-radius: 14px; }
+.knowledge-graph-heading { align-items: flex-start; }
+.knowledge-graph-controls { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.graph-search { display: flex; align-items: center; gap: 8px; min-width: 155px; padding: 8px 10px; color: #9297b0; border: 1px solid #2b3047; border-radius: 9px; background: #0b0e17; }
+.graph-search input { width: 100%; min-width: 0; color: #f0edff; outline: none; border: 0; background: transparent; font: inherit; font-size: 11px; }
+.graph-search input::placeholder { color: #747a94; }
+.graph-select { max-width: 130px; padding: 8px 24px 8px 10px; color: #d7d2eb; border: 1px solid #2b3047; border-radius: 9px; background: #111421; font-size: 11px; }
+.knowledge-graph-canvas { min-height: 340px; background-color: #080b13; background-image: radial-gradient(circle at 50% 50%, rgba(88, 64, 170, .15), transparent 42%), radial-gradient(rgba(132, 133, 185, .22) .7px, transparent .7px); background-size: auto, 22px 22px; }
+.knowledge-graph-lines { z-index: 0; }
+.knowledge-graph-lines line { transition: opacity 140ms ease; }
+.graph-hub { position: absolute; z-index: 1; left: 50%; top: 50%; display: flex; flex-direction: column; align-items: center; gap: 4px; transform: translate(-50%, -50%); pointer-events: none; }
+.graph-hub-icon { display: grid; place-items: center; width: 53px; height: 53px; color: #fff; border: 1px solid #b39aff; border-radius: 16px; background: linear-gradient(145deg, #8f63f4, #38247a); box-shadow: 0 0 0 6px rgba(135, 93, 255, .08), 0 0 35px rgba(124, 83, 255, .3); }
+.graph-hub strong { color: #f2eeff; font-size: 11px; }
+.graph-hub small { color: #9295b0; font-size: 9px; }
+.graph-hub-orbit { position: absolute; top: -13px; width: 78px; height: 78px; border: 1px solid rgba(145, 113, 255, .28); border-radius: 22px; transform: rotate(30deg); }
+.graph-data-node { z-index: 2; min-width: 92px; max-width: 132px; padding: 9px 9px 8px; border-radius: 12px; background: linear-gradient(145deg, rgba(18, 22, 37, .98), rgba(10, 13, 23, .98)); }
+.graph-data-node strong { max-width: 112px; font-size: 10px; }
+.graph-data-node small { max-width: 112px; overflow: hidden; text-overflow: ellipsis; }
+.graph-node-tag { max-width: 104px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 3px; padding: 3px 6px; color: #c2afff; border: 1px solid rgba(148, 113, 255, .2); border-radius: 6px; background: rgba(125, 91, 224, .1); font-size: 8px; }
+.graph-data-note .graph-node-icon { color: #d0a7ff; border-color: rgba(186, 122, 255, .3); background: rgba(149, 84, 228, .13); }
+.graph-data-snippet .graph-node-icon { color: #8ac8ff; border-color: rgba(88, 169, 255, .32); background: rgba(58, 136, 230, .13); }
+.graph-data-collection .graph-node-icon { color: #ffc18c; border-color: rgba(255, 169, 106, .3); background: rgba(230, 134, 68, .12); }
+.knowledge-graph-footer { flex-wrap: wrap; }
+.graph-legend { display: inline-flex; align-items: center; gap: 6px; }
+.graph-legend i { display: inline-block; width: 7px; height: 7px; margin-left: 5px; border-radius: 50%; }
+.legend-note { background: #be7cff; } .legend-code { background: #60a5fa; } .legend-collection { background: #f6b26b; }
+@media (min-width: 1000px) { .knowledge-graph-canvas { min-height: 390px; } }
+@media (max-width: 760px) {
+  .knowledge-graph-heading { gap: 12px; }
+  .knowledge-graph-controls { width: 100%; }
+  .graph-search { flex: 1; }
+  .graph-select { flex: 0 0 auto; }
+  .knowledge-graph-canvas { min-height: 330px; margin: 0 8px; }
+  .graph-data-node { min-width: 72px; max-width: 104px; padding: 6px; }
+  .graph-data-node strong { max-width: 90px; font-size: 9px; }
+  .graph-node-tag { max-width: 85px; }
+  .graph-hub-icon { width: 43px; height: 43px; border-radius: 13px; }
+}
+@media (max-width: 420px) {
+  .knowledge-graph-canvas { min-height: 300px; }
+  .graph-data-node { min-width: 60px; max-width: 84px; }
+  .graph-data-node .graph-node-icon { width: 24px; height: 24px; }
+  .graph-data-node strong { max-width: 73px; font-size: 8px; }
+  .graph-data-node small { max-width: 73px; font-size: 7px; }
+  .graph-node-tag { max-width: 70px; font-size: 7px; }
+}
