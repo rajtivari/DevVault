@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AlertCircle, Check, Code2, Copy, Download, FileText, FolderOpen, Home, PanelLeftClose, PanelLeftOpen, Pencil, Star, Play, Plus, Search, Save, Tag, Trash2, Upload, Wrench, X } from 'lucide-react'
-import { createPreviewDocument, getRunnerMode, runJavaScriptInSandbox, type ConsoleEntry, type SandboxRun } from './codeRunner'
+import { createPreviewDocument, getRunnerMode, runJavaScriptInSandbox, runPythonInBrowser, type ConsoleEntry, type SandboxRun } from './codeRunner'
 import './App.css'
 
 type Note = {
@@ -297,15 +297,20 @@ function App() {
   }
 
   function runSnippetCode() {
-    if (!snippetDraft || snippetRunnerMode !== 'javascript') return
+    if (!snippetDraft || !['javascript', 'python'].includes(snippetRunnerMode)) return
     clearOutput()
     if (!snippetDraft.code.trim()) {
-      setConsoleEntries([{ id: 'empty-code', kind: 'error', text: 'Add JavaScript code before running.' }])
+      setConsoleEntries([{ id: 'empty-code', kind: 'error', text: 'Add code before running.' }])
       setRunFinished(true)
       return
     }
 
     setIsRunning(true)
+    if (snippetRunnerMode === 'python') {
+      void runPythonInBrowser(snippetDraft.code, (entry) => setConsoleEntries((entries) => [...entries, entry]))
+        .finally(() => { setIsRunning(false); setRunFinished(true) })
+      return
+    }
     sandboxRunRef.current = runJavaScriptInSandbox(
       snippetDraft.code,
       (entry) => setConsoleEntries((entries) => [...entries, entry]),
@@ -1221,7 +1226,7 @@ function App() {
                       <div className="snippet-output-header">
                         <h3 id="snippet-output-title">Output</h3>
                         <div className="snippet-output-actions">
-                          {snippetRunnerMode === 'javascript' && (
+                          {['javascript', 'python'].includes(snippetRunnerMode) && (
                             <button
                               className="secondary-button run-code-button"
                               type="button"
@@ -1232,7 +1237,7 @@ function App() {
                               {isRunning ? 'Running...' : 'Run Code'}
                             </button>
                           )}
-                          {snippetRunnerMode === 'javascript' && (
+                          {['javascript', 'python'].includes(snippetRunnerMode) && (
                             <button className="text-button clear-output-button" type="button" onClick={clearOutput}>
                               Clear Output
                             </button>
