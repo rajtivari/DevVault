@@ -1135,6 +1135,59 @@
   color: #85858f;
   font-size: 11px;
 }
+.dashboard-lower-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+  gap: 12px;
+}
+.dashboard-start-section,
+.dashboard-backup-section { padding: 17px 16px 15px; }
+.dashboard-start-list { display: grid; }
+.dashboard-start-item {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 4px;
+  color: #b8b6c4;
+  border: 0;
+  border-top: 1px solid #29292f;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+.dashboard-start-item:hover { background: #1b1a20; }
+.dashboard-start-item > span:nth-child(2) { display: grid; gap: 4px; min-width: 0; }
+.dashboard-start-item strong { color: #e5e3ed; font-size: 12px; font-weight: 580; }
+.dashboard-start-item small { color: #92929d; font-size: 11px; line-height: 1.5; }
+.dashboard-start-item > svg { color: #b39af2; }
+.dashboard-start-number {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: #c4b2ef;
+  border: 1px solid #3a3546;
+  border-radius: 7px;
+  background: #211d29;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.dashboard-privacy-icon {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  color: #7fe0bd;
+  border: 1px solid #29483e;
+  border-radius: 7px;
+  background: #17251f;
+}
+.dashboard-backup-copy { margin: 5px 2px 20px; color: #a1a0ac; font-size: 12px; line-height: 1.75; }
+.dashboard-backup-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.dashboard-backup-actions .secondary-button { min-height: 36px; padding-inline: 11px; }
+.dashboard-backup-actions .text-button { display: inline-flex; align-items: center; gap: 6px; }
 
 @media (max-width: 900px) {
   .dashboard-welcome { align-items: flex-start; flex-direction: column; }
@@ -1146,8 +1199,9 @@
   .dashboard-stat-grid { gap: 8px; grid-template-columns: 1fr; }
   .dashboard-stat { grid-template-columns: 32px 1fr; padding: 12px; }
   .dashboard-stat > strong { font-size: 21px; }
-  .dashboard-recent-grid { grid-template-columns: 1fr; gap: 10px; }
+  .dashboard-recent-grid, .dashboard-lower-grid { grid-template-columns: 1fr; gap: 10px; }
   .dashboard-section { padding: 13px 10px 8px; }
+  .dashboard-backup-copy { margin-bottom: 14px; }
 }
 
 .global-search-wrap{position:relative;width:min(360px,48%);margin-left:auto}
