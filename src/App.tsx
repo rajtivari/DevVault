@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AlertCircle, Check, Code2, Copy, Download, FileText, FolderOpen, Home, PanelLeftClose, PanelLeftOpen, Pencil, Star, Play, Plus, Search, Save, Tag, Trash2, Upload, X } from 'lucide-react'
+import { AlertCircle, Check, Code2, Copy, Download, FileText, FolderOpen, Home, PanelLeftClose, PanelLeftOpen, Pencil, Star, Play, Plus, Search, Save, Tag, Trash2, Upload, Wrench, X } from 'lucide-react'
 import { createPreviewDocument, getRunnerMode, runJavaScriptInSandbox, type ConsoleEntry, type SandboxRun } from './codeRunner'
 import './App.css'
 
@@ -1071,11 +1071,11 @@ function App() {
                         <Copy size={14} aria-hidden="true" />Copy code
                       </button>
                       {activeSnippetId && (
-                        <button className={`icon-button favorite-toggle${activeSnippet.favorite ? " is-favorite" : ""}`} type="button" onClick={() => toggleSnippetFavorite(activeSnippet.id)} aria-label={activeSnippet.favorite ? "Remove snippet from favorites" : "Add snippet to favorites"} title="Toggle favorite"><Star size={16} fill={activeSnippet.favorite ? "currentColor" : "none"} aria-hidden="true" /></button>
-                        <button className="icon-button delete-button" type="button" onClick={deleteSnippet} aria-label="Delete snippet" title="Delete snippet">
-                          <Trash2 size={16} aria-hidden="true" />
-                        </button>
-                      )}
+                        <>
+                          <button className={`icon-button favorite-toggle${activeSnippet?.favorite ? ' is-favorite' : ''}`} type="button" onClick={() => toggleSnippetFavorite(activeSnippetId)} aria-label={activeSnippet?.favorite ? 'Remove snippet from favorites' : 'Add snippet to favorites'} title="Toggle favorite"><Star size={16} fill={activeSnippet?.favorite ? 'currentColor' : 'none'} aria-hidden="true" /></button>
+                          <button className="icon-button delete-button" type="button" onClick={deleteSnippet} aria-label="Delete snippet" title="Delete snippet"><Trash2 size={16} aria-hidden="true" /></button>
+                        </>
+                      )}}
                     </div>
                   </div>
                   <div className="editor-fields snippet-fields">
