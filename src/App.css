@@ -1249,3 +1249,5 @@
 .settings-card button:focus-visible,.archive-row button:focus-visible,.tool-tabs button:focus-visible{outline:2px solid #a88be0;outline-offset:2px}
 
 .tool-single-input{width:100%;border:1px solid #303039;border-radius:7px;background:#101013;color:#e4e2eb;padding:11px 12px;font:12px ui-monospace,SFMono-Regular,Consolas,monospace;outline:none}.tool-single-input:focus{border-color:#735a99}
+
+.diff-output{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.tool-output .diff-output{border-left:2px solid #55446f}
