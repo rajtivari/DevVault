@@ -1441,3 +1441,38 @@ input, select, textarea, .tool-textarea, .tool-single-input {
   .settings-card { flex-wrap: wrap; }
   .settings-actions button { max-width: 100%; }
 }
+
+
+/* Mobile-first override: prevent the desktop workspace from shrinking to fit a phone. */
+@media (max-width: 760px) {
+  .app-shell { display: block !important; grid-template-columns: minmax(0, 1fr) !important; width: 100%; }
+  .sidebar { position: relative !important; top: auto; width: 100%; height: auto !important; min-width: 0; padding: 12px 14px !important; border-right: 0; border-bottom: 1px solid #28282f; }
+  .sidebar .brand { margin: 0 0 10px !important; }
+  .sidebar > .sidebar-section:first-of-type { display: flex; flex-direction: row; gap: 5px; max-width: 100%; overflow-x: auto; }
+  .sidebar > .sidebar-section:first-of-type .nav-item { flex: 0 0 auto; width: auto; min-height: 36px; padding: 0 9px; font-size: 11px; }
+  .main-content { width: 100%; max-width: none; min-width: 0; margin: 0; padding: 0 14px 30px !important; }
+  .topbar { gap: 10px; min-width: 0; }
+  .breadcrumb { min-width: 0; flex: 0 1 auto; }
+  .global-search-wrap { width: min(52%, 260px); }
+  .page-heading { min-width: 0; }
+  .workspace { grid-template-columns: minmax(0, 1fr) !important; }
+  .dashboard-stat-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .dashboard-recent-grid, .dashboard-lower-grid { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-welcome { align-items: flex-start; }
+  .dashboard-quick-actions { flex-wrap: wrap; }
+  .settings-workspace, .tools-workspace, .archive-workspace, .favorites-workspace { width: 100%; max-width: none; min-width: 0; }
+  .tool-workbench { width: 100%; min-width: 0; padding: 14px; }
+  .settings-card { min-width: 0; }
+}
+@media (max-width: 480px) {
+  .main-content { padding-right: 12px !important; padding-left: 12px !important; }
+  .topbar { min-height: 50px; }
+  .breadcrumb { gap: 6px; font-size: 10px; }
+  .global-search-wrap { width: 46%; }
+  .dashboard-stat-grid { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-welcome h1 { font-size: 22px; }
+  .dashboard-quick-actions > * { max-width: 100%; }
+  .workspace { grid-template-columns: minmax(0, 1fr) !important; }
+  .editor-fields { padding-inline: 12px; }
+  .code-editor-shell { grid-template-columns: 30px minmax(0, 1fr); }
+}
