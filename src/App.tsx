@@ -114,7 +114,7 @@ function App() {
   const [graphExpanded, setGraphExpanded] = useState(false)
   const [graphFilter, setGraphFilter] = useState<'all' | 'notes' | 'snippets' | 'collections'>('all')
   const [graphQuery, setGraphQuery] = useState('')
-  const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections' | 'favorites' | 'tools' | 'archive' | 'settings'>('dashboard')
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections' | 'favorites' | 'graph' | 'tools' | 'archive' | 'settings'>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const globalSearchInputRef = useRef<HTMLInputElement | null>(null)
   const globalSearchWrapRef = useRef<HTMLDivElement | null>(null)
@@ -755,6 +755,7 @@ function App() {
           </button>
           <button className={`nav-item${activeSection === 'archive' ? ' is-active' : ''}`} type="button" onClick={() => setActiveSection('archive')} aria-current={activeSection === 'archive' ? 'page' : undefined}><FolderOpen size={16} aria-hidden="true" /><span>Archive</span><span className="nav-count">{notes.filter((note) => note.archived).length + snippets.filter((snippet) => snippet.archived).length}</span></button>
           <button className={`nav-item${activeSection === 'settings' ? ' is-active' : ''}`} type="button" onClick={() => setActiveSection('settings')} aria-current={activeSection === 'settings' ? 'page' : undefined}><Wrench size={16} aria-hidden="true" /><span>Settings & backup</span></button>
+          <button className={`nav-item${activeSection === 'graph' ? ' is-active' : ''}`} type="button" onClick={() => setActiveSection('graph')} aria-current={activeSection === 'graph' ? 'page' : undefined}><Network size={16} aria-hidden="true" /><span>Knowledge graph</span></button>
           <button className={`nav-item${activeSection === 'tools' ? ' is-active' : ''}`} type="button" onClick={() => setActiveSection('tools')}><Wrench size={16} aria-hidden="true" /><span>Developer tools</span></button>
         </div>
 
@@ -963,7 +964,51 @@ function App() {
           )}
         </label>
 
-        {activeSection === 'dashboard' ? (
+        {activeSection === 'graph' ? (
+          <section className="graph-workspace-page" aria-label="Knowledge graph workspace">
+            <header className="graph-workspace-header">
+              <div className="knowledge-graph-title"><span className="knowledge-graph-mark"><Network size={22} aria-hidden="true" /></span><div><p className="eyebrow">YOUR KNOWLEDGE, CONNECTED</p><h2>Knowledge Graph</h2><p>Explore how your notes, code snippets, collections and tags relate.</p></div></div>
+              <div className="graph-workspace-filters">
+                <button type="button" className={graphFilter === 'all' ? 'is-active' : ''} onClick={() => setGraphFilter('all')}>All items</button>
+                <button type="button" className={graphFilter === 'notes' ? 'is-active' : ''} onClick={() => setGraphFilter('notes')}>Notes</button>
+                <button type="button" className={graphFilter === 'snippets' ? 'is-active' : ''} onClick={() => setGraphFilter('snippets')}>Snippets</button>
+                <button type="button" className={graphFilter === 'collections' ? 'is-active' : ''} onClick={() => setGraphFilter('collections')}>Collections</button>
+              </div>
+            </header>
+            <div className="graph-workspace-layout">
+              <section className="knowledge-graph-card graph-workspace-card">
+                <div className="knowledge-graph-heading">
+                  <div className="graph-workspace-summary"><strong>{visibleKnowledgeNodes.length}</strong><span>visible items</span><span className="graph-summary-dot">·</span><span>{knowledgeEdges.length} connections</span></div>
+                  <div className="knowledge-graph-controls">
+                    <label className="graph-search"><Search size={14} aria-hidden="true" /><input aria-label="Search graph" value={graphQuery} onChange={(event) => setGraphQuery(event.target.value)} placeholder="Search notes, snippets, tags…" /></label>
+                    <button className="graph-expand-button" type="button" onClick={() => { setGraphQuery(''); setGraphFilter('all') }}>Reset</button>
+                  </div>
+                </div>
+                <div className="knowledge-graph-canvas graph-workspace-canvas">
+                  <svg className="knowledge-graph-lines" viewBox="0 0 700 420" preserveAspectRatio="none" aria-hidden="true">
+                    <defs><linearGradient id="graphLineWorkspace" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#7860ff" stopOpacity=".15"/><stop offset="50%" stopColor="#9d7aff" stopOpacity=".9"/><stop offset="100%" stopColor="#36c8ff" stopOpacity=".2"/></linearGradient></defs>
+                    {knowledgeEdges.map((edge, index) => { const from = visibleKnowledgeNodes[edge.from]; const to = visibleKnowledgeNodes[edge.to]; return <line key={index} x1={from.x * 7} y1={from.y * 4.2} x2={to.x * 7} y2={to.y * 4.2} stroke="url(#graphLineWorkspace)" strokeWidth="1.3" strokeOpacity=".8" /> })}
+                  </svg>
+                  {visibleKnowledgeNodes.map((node) => <button key={node.kind + node.id} className={`graph-node graph-data-node graph-data-${node.kind} graph-workspace-node`} style={{ left: `${node.x}%`, top: `${node.y}%` }} type="button" title={node.label} onClick={() => {
+                    if (node.kind === 'note') { setActiveNoteId(node.id); setActiveSection('notes') }
+                    else if (node.kind === 'snippet') { const snippet = snippets.find((item) => item.id === node.id); if (snippet) { setActiveSnippetId(snippet.id); setSnippetDraft({ title: snippet.title, language: snippet.language, code: snippet.code, tagsText: snippet.tags.join(', '), collectionId: snippet.collectionId }); setSnippetDirty(false); setActiveSection('snippets') } }
+                    else { setSelectedCollectionId(node.id); setActiveSection('collections') }
+                  }}><span className="graph-node-icon">{node.kind === 'note' ? <FileText size={17}/> : node.kind === 'snippet' ? <Code2 size={17}/> : <FolderOpen size={17}/>}</span><strong>{node.label.length > 24 ? node.label.slice(0, 23) + '…' : node.label}</strong><small>{node.detail}</small>{node.tags.slice(0,2).map(tag => <span className="graph-node-tag" key={tag}>{tag}</span>)}</button>)}
+                  {visibleKnowledgeNodes.length === 0 && <div className="graph-empty-state"><Network size={28}/><strong>No matching items</strong><span>Try a different search or filter.</span></div>}
+                </div>
+                <div className="knowledge-graph-footer"><span><span className="graph-live-dot" />Lines connect items that share tags or collections</span><span className="graph-legend"><i className="legend-note" /> Notes <i className="legend-code" /> Snippets <i className="legend-collection" /> Collections</span></div>
+              </section>
+              <aside className="graph-inspector">
+                <div className="graph-inspector-heading"><h3>Explore your library</h3><span>{notes.length + snippets.length + collections.length} items</span></div>
+                <p>Choose a node to open its original note, snippet, or collection.</p>
+                <div className="graph-inspector-stats"><div><FileText size={16}/><span>Notes</span><strong>{notes.length}</strong></div><div><Code2 size={16}/><span>Snippets</span><strong>{snippets.length}</strong></div><div><FolderOpen size={16}/><span>Collections</span><strong>{collections.length}</strong></div></div>
+                <div className="graph-inspector-heading"><h3>Popular tags</h3></div>
+                {Array.from(new Set([...notes.flatMap(item => item.tags), ...snippets.flatMap(item => item.tags)])).slice(0,12).map(tag => <button type="button" className="graph-tag-link" key={tag} onClick={() => setGraphQuery(tag)}><span># {tag}</span><span>Explore →</span></button>)}
+                <div className="graph-inspector-actions"><button type="button" onClick={createNote}><Plus size={15}/> Add note</button><button type="button" onClick={createSnippet}><Code2 size={15}/> Add snippet</button></div>
+              </aside>
+            </div>
+          </section>
+        ) : activeSection === 'dashboard' ? (
           <section className="dashboard-workspace" aria-label="DevVault dashboard">
             <div className="dashboard-welcome">
               <div><p className="eyebrow">YOUR DEVELOPER WORKSPACE</p><h2>Keep what you learn.</h2><p>Save useful ideas, code patterns, and notes — and find them when you need them.</p></div>
@@ -983,7 +1028,7 @@ function App() {
             <section className={`knowledge-graph-card${graphExpanded ? " is-graph-expanded" : ""}`} aria-label="Knowledge graph">
               <div className="knowledge-graph-heading">
                 <div className="knowledge-graph-title"><span className="knowledge-graph-mark"><Network size={20} aria-hidden="true" /></span><div><h3>Knowledge Graph</h3><p>Explore the relationships across your saved knowledge.</p></div></div>
-                <div className="knowledge-graph-controls"><button className="graph-expand-button" type="button" onClick={() => setGraphExpanded((value) => !value)}>{graphExpanded ? "Close full graph" : "Open full graph"}</button>
+                <div className="knowledge-graph-controls"><button className="graph-expand-button" type="button" onClick={() => setActiveSection("graph")}>Explore graph <span aria-hidden="true">↗</span></button>
                   <label className="graph-search"><Search size={14} aria-hidden="true" /><input aria-label="Search graph" value={graphQuery} onChange={(event) => setGraphQuery(event.target.value)} placeholder="Search graph…" /></label>
                   <select aria-label="Filter graph" className="graph-select" value={graphFilter} onChange={(event) => setGraphFilter(event.target.value as typeof graphFilter)}><option value="all">All items</option><option value="notes">Notes</option><option value="snippets">Code</option><option value="collections">Collections</option></select>
                 </div>
