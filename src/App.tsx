@@ -1024,7 +1024,7 @@ function App() {
               <button className="dashboard-stat" type="button" onClick={() => setActiveSection('snippets')}><span className="dashboard-stat-icon"><Code2 size={17} aria-hidden="true" /></span><span className="dashboard-stat-label">Code snippets</span><strong>{snippets.length}</strong><span className="dashboard-stat-foot">Browse saved code <span aria-hidden="true">↗</span></span></button>
               <button className="dashboard-stat" type="button" onClick={() => setActiveSection('collections')}><span className="dashboard-stat-icon"><FolderOpen size={17} aria-hidden="true" /></span><span className="dashboard-stat-label">Collections</span><strong>{collections.length}</strong><span className="dashboard-stat-foot">Organize your work <span aria-hidden="true">↗</span></span></button>
             </div>
-            <section className={`knowledge-graph-card${graphExpanded ? " is-graph-expanded" : ""}`} aria-label="Knowledge graph">
+            <section className="knowledge-graph-card" aria-label="Knowledge graph">
               <div className="knowledge-graph-heading">
                 <div className="knowledge-graph-title"><span className="knowledge-graph-mark"><Network size={20} aria-hidden="true" /></span><div><h3>Knowledge Graph</h3><p>Explore the relationships across your saved knowledge.</p></div></div>
                 <div className="knowledge-graph-controls"><button className="graph-expand-button" type="button" onClick={() => setActiveSection("graph")}>Explore graph <span aria-hidden="true">↗</span></button>
@@ -1032,7 +1032,7 @@ function App() {
                   <select aria-label="Filter graph" className="graph-select" value={graphFilter} onChange={(event) => setGraphFilter(event.target.value as typeof graphFilter)}><option value="all">All items</option><option value="notes">Notes</option><option value="snippets">Code</option><option value="collections">Collections</option></select>
                 </div>
               </div>
-              <div className={`knowledge-graph-canvas${graphExpanded ? " is-expanded" : ""}`}>
+              <div className="knowledge-graph-canvas">
                 <svg className="knowledge-graph-lines" viewBox="0 0 700 280" preserveAspectRatio="none" aria-hidden="true">
                   <defs><linearGradient id="graphLine" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#7860ff" stopOpacity=".15"/><stop offset="50%" stopColor="#9d7aff" stopOpacity=".9"/><stop offset="100%" stopColor="#36c8ff" stopOpacity=".2"/></linearGradient></defs>
                   {knowledgeEdges.map((edge, index) => {
