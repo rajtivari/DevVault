@@ -1749,3 +1749,18 @@ body, .app-shell { background: var(--dv-bg); }
   .graph-data-node small { max-width: 94px; font-size: 8px; }
   .graph-node-tag { max-width: 90px; font-size: 8px; }
 }
+
+
+/* Keep the global search popover above dashboard cards and graph panels. */
+.topbar {
+  position: relative;
+  z-index: 100;
+}
+.global-search-wrap {
+  position: relative;
+  z-index: 101;
+}
+.global-search-results {
+  z-index: 9999;
+  isolation: isolate;
+}
