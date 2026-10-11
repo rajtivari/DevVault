@@ -1764,3 +1764,90 @@ body, .app-shell { background: var(--dv-bg); }
   z-index: 9999;
   isolation: isolate;
 }
+
+
+/* Full-screen Knowledge Graph workspace */
+.knowledge-graph-card.is-graph-expanded {
+  position: fixed;
+  inset: 18px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin: 0;
+  padding: clamp(14px, 2vw, 26px);
+  overflow: hidden;
+  background: #0d0e14;
+  border: 1px solid #39334f;
+  border-radius: 16px;
+  box-shadow: 0 0 0 100vmax rgba(3, 4, 8, .88), 0 28px 100px rgba(0, 0, 0, .65);
+}
+.knowledge-graph-card.is-graph-expanded .knowledge-graph-heading {
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+.knowledge-graph-card.is-graph-expanded .knowledge-graph-title h3 { font-size: 20px; }
+.knowledge-graph-card.is-graph-expanded .knowledge-graph-title p { font-size: 12px; }
+.knowledge-graph-card.is-graph-expanded .knowledge-graph-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.knowledge-graph-card.is-graph-expanded .knowledge-graph-canvas {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  overflow: hidden;
+  border-radius: 12px;
+}
+.knowledge-graph-card.is-graph-expanded .graph-data-node {
+  min-width: 145px;
+  max-width: 190px;
+  min-height: 100px;
+  padding: 12px;
+}
+.knowledge-graph-card.is-graph-expanded .graph-data-node strong {
+  max-width: 165px;
+  font-size: 12px;
+}
+.knowledge-graph-card.is-graph-expanded .graph-data-node small {
+  max-width: 165px;
+  font-size: 10px;
+}
+.knowledge-graph-card.is-graph-expanded .knowledge-graph-footer {
+  flex: 0 0 auto;
+  padding-top: 12px;
+}
+@media (max-width: 700px) {
+  .knowledge-graph-card.is-graph-expanded {
+    inset: 8px;
+    padding: 12px;
+    border-radius: 12px;
+  }
+  .knowledge-graph-card.is-graph-expanded .knowledge-graph-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .knowledge-graph-card.is-graph-expanded .knowledge-graph-controls {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+    justify-content: stretch;
+  }
+  .knowledge-graph-card.is-graph-expanded .graph-search { min-width: 0; width: 100%; }
+  .knowledge-graph-card.is-graph-expanded .graph-select { width: 100%; }
+  .knowledge-graph-card.is-graph-expanded .graph-expand-button { grid-column: 1 / -1; justify-self: start; }
+  .knowledge-graph-card.is-graph-expanded .graph-data-node {
+    min-width: 105px;
+    max-width: 135px;
+    min-height: 82px;
+    padding: 8px;
+  }
+  .knowledge-graph-card.is-graph-expanded .graph-data-node strong { max-width: 115px; font-size: 10px; }
+  .knowledge-graph-card.is-graph-expanded .graph-data-node small { max-width: 115px; font-size: 9px; }
+}
