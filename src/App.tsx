@@ -111,7 +111,6 @@ function App() {
   const [notes, setNotes] = useState<Note[]>(readNotes)
   const [snippets, setSnippets] = useState<Snippet[]>(readSnippets)
   const [collections, setCollections] = useState<Collection[]>(readCollections)
-  const [graphExpanded, setGraphExpanded] = useState(false)
   const [graphFilter, setGraphFilter] = useState<'all' | 'notes' | 'snippets' | 'collections'>('all')
   const [graphQuery, setGraphQuery] = useState('')
   const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections' | 'favorites' | 'graph' | 'tools' | 'archive' | 'settings'>('dashboard')
@@ -196,7 +195,7 @@ function App() {
     })
     // Reflow filtered results into a fresh grid so searching never leaves nodes stacked
     // at their old coordinates. Keep the overview intentionally capped for readability.
-    const visible = matches.slice(0, graphExpanded ? 40 : 12)
+    const visible = matches.slice(0, activeSection === 'graph' ? 40 : 12)
     const columns = visible.length <= 2 ? visible.length : visible.length <= 6 ? 3 : 4
     const rows = Math.ceil(visible.length / Math.max(columns, 1))
     return visible.map((node, index) => ({
@@ -204,7 +203,7 @@ function App() {
       x: columns === 1 ? 50 : 14 + (index % columns) * (72 / (columns - 1)),
       y: rows === 1 ? 50 : 22 + Math.floor(index / columns) * (56 / (rows - 1)),
     }))
-  }, [knowledgeNodes, graphFilter, graphQuery, graphExpanded])
+  }, [knowledgeNodes, graphFilter, graphQuery, activeSection])
   const knowledgeEdges = useMemo(() => {
     const edges: Array<{ from: number; to: number; related: boolean }> = []
     visibleKnowledgeNodes.forEach((node, index) => {
