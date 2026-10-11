@@ -196,7 +196,7 @@ function App() {
     })
     // Reflow filtered results into a fresh grid so searching never leaves nodes stacked
     // at their old coordinates. Keep the overview intentionally capped for readability.
-    const visible = matches.slice(0, 12)
+    const visible = matches.slice(0, graphExpanded ? 40 : 12)
     const columns = visible.length <= 2 ? visible.length : visible.length <= 6 ? 3 : 4
     const rows = Math.ceil(visible.length / Math.max(columns, 1))
     return visible.map((node, index) => ({
@@ -204,7 +204,7 @@ function App() {
       x: columns === 1 ? 50 : 14 + (index % columns) * (72 / (columns - 1)),
       y: rows === 1 ? 50 : 22 + Math.floor(index / columns) * (56 / (rows - 1)),
     }))
-  }, [knowledgeNodes, graphFilter, graphQuery])
+  }, [knowledgeNodes, graphFilter, graphQuery, graphExpanded])
   const knowledgeEdges = useMemo(() => {
     const edges: Array<{ from: number; to: number; related: boolean }> = []
     visibleKnowledgeNodes.forEach((node, index) => {
@@ -980,10 +980,10 @@ function App() {
               <button className="dashboard-stat" type="button" onClick={() => setActiveSection('snippets')}><span className="dashboard-stat-icon"><Code2 size={17} aria-hidden="true" /></span><span className="dashboard-stat-label">Code snippets</span><strong>{snippets.length}</strong><span className="dashboard-stat-foot">Browse saved code <span aria-hidden="true">↗</span></span></button>
               <button className="dashboard-stat" type="button" onClick={() => setActiveSection('collections')}><span className="dashboard-stat-icon"><FolderOpen size={17} aria-hidden="true" /></span><span className="dashboard-stat-label">Collections</span><strong>{collections.length}</strong><span className="dashboard-stat-foot">Organize your work <span aria-hidden="true">↗</span></span></button>
             </div>
-            <section className="knowledge-graph-card" aria-label="Knowledge graph">
+            <section className={`knowledge-graph-card${graphExpanded ? " is-graph-expanded" : ""}`} aria-label="Knowledge graph">
               <div className="knowledge-graph-heading">
                 <div className="knowledge-graph-title"><span className="knowledge-graph-mark"><Network size={20} aria-hidden="true" /></span><div><h3>Knowledge Graph</h3><p>Explore the relationships across your saved knowledge.</p></div></div>
-                <div className="knowledge-graph-controls"><button className="graph-expand-button" type="button" onClick={() => setGraphExpanded((value) => !value)}>{graphExpanded ? "Collapse" : "Expand graph"}</button>
+                <div className="knowledge-graph-controls"><button className="graph-expand-button" type="button" onClick={() => setGraphExpanded((value) => !value)}>{graphExpanded ? "Close full graph" : "Open full graph"}</button>
                   <label className="graph-search"><Search size={14} aria-hidden="true" /><input aria-label="Search graph" value={graphQuery} onChange={(event) => setGraphQuery(event.target.value)} placeholder="Search graph…" /></label>
                   <select aria-label="Filter graph" className="graph-select" value={graphFilter} onChange={(event) => setGraphFilter(event.target.value as typeof graphFilter)}><option value="all">All items</option><option value="notes">Notes</option><option value="snippets">Code</option><option value="collections">Collections</option></select>
                 </div>
