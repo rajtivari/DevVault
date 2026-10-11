@@ -117,6 +117,7 @@ function App() {
   const [activeSection, setActiveSection] = useState<'dashboard' | 'notes' | 'snippets' | 'collections' | 'favorites' | 'tools' | 'archive' | 'settings'>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const globalSearchInputRef = useRef<HTMLInputElement | null>(null)
+  const globalSearchWrapRef = useRef<HTMLDivElement | null>(null)
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null)
   const [collectionSearch, setCollectionSearch] = useState('')
   const [collectionDraft, setCollectionDraft] = useState<CollectionDraft | null>(null)
@@ -269,6 +270,23 @@ function App() {
   const collectionSnippets = selectedCollectionId === null ? [] : snippets.filter((snippet) => belongsToCollection(snippet.collectionId))
 
   useEffect(() => () => sandboxRunRef.current?.cancel(), [])
+
+  useEffect(() => {
+    function closeSearchOnOutsidePointer(event: PointerEvent) {
+      if (globalSearchWrapRef.current && !globalSearchWrapRef.current.contains(event.target as Node)) {
+        setGlobalSearchOpen(false)
+      }
+    }
+    function closeSearchOnEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') setGlobalSearchOpen(false)
+    }
+    document.addEventListener('pointerdown', closeSearchOnOutsidePointer)
+    document.addEventListener('keydown', closeSearchOnEscape)
+    return () => {
+      document.removeEventListener('pointerdown', closeSearchOnOutsidePointer)
+      document.removeEventListener('keydown', closeSearchOnEscape)
+    }
+  }, [])
 
   useEffect(() => {
     function handleWorkspaceShortcuts(event: KeyboardEvent) {
@@ -818,7 +836,7 @@ function App() {
             </button>
             <div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{activeSection === 'dashboard' ? 'Dashboard' : activeSection === 'notes' ? 'Notes' : activeSection === 'snippets' ? 'Code snippets' : activeSection === 'favorites' ? 'Favorites' : activeSection === 'archive' ? 'Archive' : activeSection === 'settings' ? 'Settings & backup' : 'Collections'}</strong></div>
           </div>
-          <div className="global-search-wrap">
+          <div className="global-search-wrap" ref={globalSearchWrapRef}>
             <label className="global-search-box">
               <Search size={15} aria-hidden="true" />
               <input
