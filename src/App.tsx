@@ -210,13 +210,25 @@ function App() {
     })
   }, [knowledgeNodes, graphFilter, graphQuery, activeSection])
   const knowledgeEdges = useMemo(() => {
-    const edges: Array<{ from: number; to: number; related: boolean }> = []
+    const candidates: Array<{ from: number; to: number; score: number }> = []
     visibleKnowledgeNodes.forEach((node, index) => {
       visibleKnowledgeNodes.slice(index + 1).forEach((other, offset) => {
-        const sharedTag = node.tags.some((tag) => other.tags.includes(tag))
+        const sharedTags = node.tags.filter((tag) => other.tags.includes(tag)).length
         const sharedCollection = Boolean(node.collectionId && node.collectionId === other.collectionId)
-        if (sharedTag || sharedCollection) edges.push({ from: index, to: index + 1 + offset, related: true })
+        const score = (sharedCollection ? 3 : 0) + sharedTags
+        if (score > 0) candidates.push({ from: index, to: index + 1 + offset, score })
       })
+    })
+    // Keep the strongest real relationships and cap each node's degree so the
+    // canvas reads as a network instead of a web of crossing lines.
+    candidates.sort((a, b) => b.score - a.score)
+    const degree = new Array(visibleKnowledgeNodes.length).fill(0) as number[]
+    const edges: Array<{ from: number; to: number; related: boolean }> = []
+    candidates.forEach(({ from, to }) => {
+      if (degree[from] >= 2 || degree[to] >= 2) return
+      edges.push({ from, to, related: true })
+      degree[from] += 1
+      degree[to] += 1
     })
     return edges
   }, [visibleKnowledgeNodes])
