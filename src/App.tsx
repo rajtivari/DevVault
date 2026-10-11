@@ -193,16 +193,21 @@ function App() {
       const matchesQuery = !query || node.label.toLowerCase().includes(query) || node.detail.toLowerCase().includes(query) || node.tags.some((tag) => tag.toLowerCase().includes(query))
       return matchesType && matchesQuery
     })
-    // Reflow filtered results into a fresh grid so searching never leaves nodes stacked
-    // at their old coordinates. Keep the overview intentionally capped for readability.
+    // Use a stable radial layout rather than a rigid grid. Search/filter results
+    // are redistributed around the canvas while retaining the same visual rhythm.
     const visible = matches.slice(0, activeSection === 'graph' ? 40 : 12)
-    const columns = visible.length <= 2 ? visible.length : visible.length <= 6 ? 3 : 4
-    const rows = Math.ceil(visible.length / Math.max(columns, 1))
-    return visible.map((node, index) => ({
-      ...node,
-      x: columns === 1 ? 50 : 14 + (index % columns) * (72 / (columns - 1)),
-      y: rows === 1 ? 50 : 22 + Math.floor(index / columns) * (56 / (rows - 1)),
-    }))
+    const count = visible.length
+    if (count === 1) return [{ ...visible[0], x: 50, y: 50 }]
+    const radiusX = count <= 6 ? 29 : 36
+    const radiusY = count <= 6 ? 27 : 34
+    return visible.map((node, index) => {
+      const angle = (index / count) * Math.PI * 2 - Math.PI / 2
+      return {
+        ...node,
+        x: 50 + Math.cos(angle) * radiusX,
+        y: 50 + Math.sin(angle) * radiusY,
+      }
+    })
   }, [knowledgeNodes, graphFilter, graphQuery, activeSection])
   const knowledgeEdges = useMemo(() => {
     const edges: Array<{ from: number; to: number; related: boolean }> = []
